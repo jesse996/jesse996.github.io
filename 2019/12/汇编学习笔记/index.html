@@ -1,0 +1,262 @@
+<!doctype html><html lang=en-us><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><meta name=robots content="noodp"><meta http-equiv=x-ua-compatible content="IE=edge, chrome=1"><title>汇编学习笔记 - Jesse's Blog</title><meta name=Description content="这是我的全新 Hugo 网站"><meta property="og:title" content="汇编学习笔记"><meta property="og:description" content="基础知识 汇编语言，有 3 类指令组成： 汇编指令：机器码的助记符，有对应的机器码。 伪指令：没有对应机器码，由编译器执行，计算机并不执行。 其他符号："><meta property="og:type" content="article"><meta property="og:url" content="https://jesse996.github.io/2019/12/%E6%B1%87%E7%BC%96%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/"><meta property="og:image" content="https://jesse996.github.io/avator.png"><meta property="article:published_time" content="2019-12-25T20:01:42+08:00"><meta property="article:modified_time" content="2019-12-25T20:01:42+08:00"><meta name=twitter:card content="summary_large_image"><meta name=twitter:image content="https://jesse996.github.io/avator.png"><meta name=twitter:title content="汇编学习笔记"><meta name=twitter:description content="基础知识 汇编语言，有 3 类指令组成： 汇编指令：机器码的助记符，有对应的机器码。 伪指令：没有对应机器码，由编译器执行，计算机并不执行。 其他符号："><meta name=application-name content="LoveIt"><meta name=apple-mobile-web-app-title content="LoveIt"><meta name=theme-color content="#ffffff"><meta name=msapplication-TileColor content="#da532c"><link rel=icon href=/favicon.svg><link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png><link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5><link rel=manifest href=/site.webmanifest><link rel=canonical href=https://jesse996.github.io/2019/12/%E6%B1%87%E7%BC%96%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/><link rel=next href=https://jesse996.github.io/2020/08/%E8%83%8C%E5%8C%85%E9%97%AE%E9%A2%98/><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/normalize.css@8.0.1/normalize.min.css><link rel=stylesheet href=/css/style.min.css><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.13.0/css/all.min.css><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/animate.css@3.7.2/animate.min.css><script type=application/ld+json>{"@context":"http://schema.org","@type":"BlogPosting","headline":"汇编学习笔记","inLanguage":"en-us","mainEntityOfPage":{"@type":"WebPage","@id":"https:\/\/jesse996.github.io\/2019\/12\/%E6%B1%87%E7%BC%96%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0\/"},"genre":"posts","keywords":"汇编","wordcount":8916,"url":"https:\/\/jesse996.github.io\/2019\/12\/%E6%B1%87%E7%BC%96%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0\/","datePublished":"2019-12-25T20:01:42+08:00","dateModified":"2019-12-25T20:01:42+08:00","publisher":{"@type":"Organization","name":""},"author":{"@type":"Person","name":"Jesse"},"description":""}</script></head><body header-desktop=fixed header-mobile=auto><script type=text/javascript>(window.localStorage&&localStorage.getItem('theme')?localStorage.getItem('theme')==='dark':('auto'==='auto'?window.matchMedia('(prefers-color-scheme: dark)').matches:'auto'==='dark'))&&document.body.setAttribute('theme','dark');</script><div id=mask></div><div class=wrapper><header class=desktop id=header-desktop><div class=header-wrapper><div class=header-title><a href=/ title="Jesse's Blog"><img class="lazyload logo" src=/svg/loading.min.svg data-src=/favicon.svg data-srcset="/favicon.svg, /favicon.svg 1.5x, /favicon.svg 2x" data-sizes=auto alt=/favicon.svg title=/favicon.svg>Jesse's Blog</a></div><div class=menu><div class=menu-inner><a class=menu-item href=/posts/>文章 </a><a class=menu-item href=/tags/>标签 </a><a class=menu-item href=/categories/>分类 </a><a class=menu-item href=/books>书单 </a><a class=menu-item href=/about>关于 </a><span class="menu-item delimiter"></span><span class="menu-item search" id=search-desktop><input type=text placeholder="Search titles or contents..." id=search-input-desktop>
+<a href=javascript:void(0); class="search-button search-toggle" id=search-toggle-desktop title=Search><i class="fas fa-search fa-fw"></i></a><a href=javascript:void(0); class="search-button search-clear" id=search-clear-desktop title=Clear><i class="fas fa-times-circle fa-fw"></i></a><span class="search-button search-loading" id=search-loading-desktop><i class="fas fa-spinner fa-fw fa-spin"></i></span></span><a href=javascript:void(0); class="menu-item theme-switch" title="Switch Theme"><i class="fas fa-adjust fa-fw"></i></a></div></div></div></header><header class=mobile id=header-mobile><div class=header-container><div class=header-wrapper><div class=header-title><a href=/ title="Jesse's Blog"><img class="lazyload logo" src=/svg/loading.min.svg data-src=/favicon.svg data-srcset="/favicon.svg, /favicon.svg 1.5x, /favicon.svg 2x" data-sizes=auto alt=/favicon.svg title=/favicon.svg>Jesse's Blog</a></div><div class=menu-toggle id=menu-toggle-mobile><span></span><span></span><span></span></div></div><div class=menu id=menu-mobile><div class=search-wrapper><div class="search mobile" id=search-mobile><input type=text placeholder="Search titles or contents..." id=search-input-mobile>
+<a href=javascript:void(0); class="search-button search-toggle" id=search-toggle-mobile title=Search><i class="fas fa-search fa-fw"></i></a><a href=javascript:void(0); class="search-button search-clear" id=search-clear-mobile title=Clear><i class="fas fa-times-circle fa-fw"></i></a><span class="search-button search-loading" id=search-loading-mobile><i class="fas fa-spinner fa-fw fa-spin"></i></span></div><a href=javascript:void(0); class=search-cancel id=search-cancel-mobile>Cancel</a></div><a class=menu-item href=/posts/>文章</a><a class=menu-item href=/tags/>标签</a><a class=menu-item href=/categories/>分类</a><a class=menu-item href=/books>书单</a><a class=menu-item href=/about>关于</a><a href=javascript:void(0); class="menu-item theme-switch" title="Switch Theme">
+<i class="fas fa-adjust fa-fw"></i></a></div></div></header><div class="search-dropdown desktop"><div id=search-dropdown-desktop></div></div><div class="search-dropdown mobile"><div id=search-dropdown-mobile></div></div><main class=main><div class=container><div class=toc id=toc-auto><h2 class=toc-title>Contents</h2><div class=toc-content id=toc-content-auto></div></div><article class="page single"><h1 class="single-title animated flipInX">汇编学习笔记</h1><div class=post-meta><div class=post-meta-line><span class=post-author><a href=https://github.com/jesse996 title=Author target=_blank rel="noopener noreffer author" class=author><i class="fas fa-user-circle fa-fw"></i>Jesse</a></span>&nbsp;<span class=post-category>included in <a href=/categories/%E6%B1%87%E7%BC%96/><i class="far fa-folder fa-fw"></i>汇编</a></span></div><div class=post-meta-line><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime=2019-12-25>2019-12-25</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;8916 words&nbsp;
+<i class="far fa-clock fa-fw"></i>&nbsp;18 minutes&nbsp;</div></div><div class="details toc" id=toc-static kept=true><div class="details-summary toc-title"><span>Contents</span>
+<span><i class="details-icon fas fa-angle-right"></i></span></div><div class="details-content toc-content" id=toc-content-static><nav id=TableOfContents><ul><li><ul><li><a href=#通用寄存器>通用寄存器</a></li><li><a href=#段寄存器>段寄存器</a></li><li><a href=#代码段>代码段</a></li></ul></li></ul><ul><li><a href=#ds-和address>DS 和[address]</a></li><li><a href=#栈>栈</a></li><li><a href=#段>段</a></li></ul><ul><li><ul><li><ul><li><a href=#segment>segment</a></li><li><a href=#end>end</a></li><li><a href=#assume>assume</a></li></ul></li><li><a href=#loop>loop</a></li></ul></li><li><a href=#bxsidibp>bx，si，di，bp</a></li><li><a href=#数据在什么地方>数据在什么地方？</a></li><li><a href=#数据有多长>数据有多长？</a></li><li><a href=#div>div</a></li><li><a href=#伪指令-dd>伪指令 dd</a></li><li><a href=#dup>dup</a></li></ul><ul><li><a href=#offset>offset</a></li><li><a href=#jmp-指令>jmp 指令</a><ul><li><a href=#依据位移进行转移的-jmp-指令>依据位移进行转移的 jmp 指令</a></li><li><a href=#依据转移的目的地址进行转移的-jmp-指令>依据转移的目的地址进行转移的 jmp 指令</a></li><li><a href=#转移地址在寄存器中的-jmp-指令>转移地址在寄存器中的 jmp 指令</a></li><li><a href=#转移地址在内存中的-jmp-指令>转移地址在内存中的 jmp 指令</a></li></ul></li><li><a href=#jcxz-指令>jcxz 指令</a></li><li><a href=#loop-指令>loop 指令</a></li></ul><ul><li><ul><li><a href=#ret-和-retf>ret 和 retf</a></li><li><a href=#call-指令>call 指令</a></li><li><a href=#mul-指令>mul 指令</a></li></ul></li></ul><ul><li><a href=#zf-标志zero-flag>ZF 标志（zero flag）</a></li><li><a href=#pf-标志parity-flag>PF 标志（Parity flag）</a></li><li><a href=#sf-标志位sign-flag>SF 标志位（Sign Flag）</a></li><li><a href=#cf-标志位carry-flag>CF 标志位（Carry Flag）</a></li><li><a href=#of-标志位overflow-flag>OF 标志位（Overflow Flag）</a></li><li><a href=#adc-指令>adc 指令</a></li><li><a href=#sbb-指令>sbb 指令</a></li><li><a href=#cmp-指令>cmp 指令</a></li><li><a href=#条件转移指令>条件转移指令</a></li><li><a href=#df-标志和串传送指令>DF 标志和串传送指令</a><ul><li><a href=#movsb-指令>movsb 指令</a></li><li><a href=#movsw>movsw</a></li></ul></li><li><a href=#pushf-和-poopf>pushf 和 poopf</a></li></ul><ul><li><ul><li><a href=#ret-和-retf-1>ret 和 retf</a></li><li><a href=#call-指令-1>call 指令</a></li><li><a href=#mul-指令-1>mul 指令</a></li></ul></li></ul><ul><li><a href=#zf-标志zero-flag-1>ZF 标志（zero flag）</a></li><li><a href=#pf-标志parity-flag-1>PF 标志（Parity flag）</a></li><li><a href=#sf-标志位sign-flag-1>SF 标志位（Sign Flag）</a></li><li><a href=#cf-标志位carry-flag-1>CF 标志位（Carry Flag）</a></li><li><a href=#of-标志位overflow-flag-1>OF 标志位（Overflow Flag）</a></li><li><a href=#adc-指令-1>adc 指令</a></li><li><a href=#sbb-指令-1>sbb 指令</a></li><li><a href=#cmp-指令-1>cmp 指令</a></li><li><a href=#条件转移指令-1>条件转移指令</a></li><li><a href=#df-标志和串传送指令-1>DF 标志和串传送指令</a><ul><li><a href=#movsb-指令-1>movsb 指令</a></li><li><a href=#movsw-1>movsw</a></li></ul></li><li><a href=#pushf-和-poopf-1>pushf 和 poopf</a></li></ul></nav></div></div><div class=content id=content><h1 id=基础知识>基础知识</h1><p>汇编语言，有 3 类指令组成：</p><ol><li>汇编指令：机器码的助记符，有对应的机器码。</li><li>伪指令：没有对应机器码，由编译器执行，计算机并不执行。</li><li>其他符号：如+、-、*、\，由编译器识别，没有对应机器码。</li></ol><p>核心是编译指令。每一种 cpu 都有自己的汇编指令集。</p><p>存储器就是内存，存储器被划分为多个存储单元，从 0 开始顺序编号，一个存储单元就是一个字节（Byte）。存储器中指令和数据没有任何区别，都是二进制信息。</p><p>cpu 有 3 类总线：地址总线、数据总线、控制总线。</p><p>一个 cpu 有 n 根地址总线，则可以寻找 2 的 n 次方个内存单元。<br>n 根数据总线一次能传输 n 位，即 n bit。</p><p>控制总线是一些不同控制线的集合，有多少根控制总线，就意味着 cpu 提供了对外部器件的多少种控制。</p><p>内存地址空间：对 cpu 来说，系统中的所有存储器中的存储单元都处于一个统一的逻辑存储器中，它的容量受 cpu 寻址能力的限制。这个逻辑存储器即是所说的内存地址空间。</p><h1 id=寄存器>寄存器</h1><p>一个典型的 cpu 由<code>运算器、控制器、寄存器</code>等器件构成，这些器件靠<em>内部总线</em>相连。前一章说的总线，相对于 cpu 内部来说是外部总线。</p><p>不同 cpu，寄存器的个数、结构都不同。</p><h3 id=通用寄存器>通用寄存器</h3><p>8086cpu 所有寄存器都是 16 位。AX、BX、CX、DX 这 4 个寄存器通常用来存放一般性数据，被称为通用寄存器。都可分为类似 AH 和 AL，BH 和 BL&mldr;</p><p>由于 8086 有 20 位地址总线，但 8086 是 16 位的，即在内部一次性处理、传输、暂时存储的地址只有 16 位，所以 8086 采用在内部用 2 个 16 位地址合成的方法来形成一个 20 位的物理地址。</p><p>地址加法器采用 <code>物理地址=段地址x16+偏移地址</code> 来合成物理地址。（也即左移 4 位，也即 x10H）。本质就是<code>基础地址+偏移地址=物理地址</code>。</p><p>cpu 可以用不同的段地址和偏移地址形成同一个物理地址。</p><h3 id=段寄存器>段寄存器</h3><p>段地址存放在段寄存器中，8086 有 4 个段寄存器：CS、DS、SS、ES</p><p>CS 和 IP 是 8086 中两个最关键的寄存器，它们共同表示了 cpu 当前要读取指令的地址。CS 为代码段寄存器，IP 为指令指针寄存器。</p><p>问：cpu 根据什么将内存中的信息看做是指令？<br>答：cpu 将 CS:IP 指向的内存单元中的内容看做是指令。</p><p>在 cpu 中，程序员能用指令读写的部件只有寄存器。8086 大部分寄存器的值，都可以用<code>mov</code>来修改，<code>mov</code>称为传送指令。但不能用来设置 CS、IP 的值。
+若想修改 CS、IP，可以用<code>jmp</code>指令，形如<code>jmp 段地址：偏移地址</code>。<br>若仅想修改 IP 的内容，可用形如<code>jmp 某一合法寄存器</code>，如<code>jmp ax</code>，可修改 IP 为 ax 中的值。
+mov 可以操作的有：寄存器和寄存器，立即数到寄存器，寄存器和段寄存器，寄存器和内存单元，段寄存器和内存单元</p><h3 id=代码段>代码段</h3><p>我们可以根据需要，将一组内存单元定义为一个段。我们可以将长度为 N（N&lt;=64KB，因是 16 位）的一组代码，存在一组地址连续、起始地址为 16 的倍数的内存单元中，从而定义了一个代码段。那么代码段是如何被执行呢？只要将 CS：IP 指向代码段中第一条指令的首地址。</p><h1 id=debug-用法>debug 用法</h1><p>1.查看、修改 cpu 中寄存器的内容：R<br>2.查看内存中的内容：D<br>3.修改内存中的内容：E（可以写入数据、命令，无区别）<br>4.将内存中的内容解释为机器指令和对应的汇编指令：U<br>5.执行 CS：IP 指向的内存单元的指令：T<br>6.以汇编指令的形式向内存中写入命令：A
+7.G 命令可以直接让 IP 跳到指定位置，如<code>g 0012</code>,会使 IP 跳到 0012 的位置。 8.用 p 命令可以从循环中一次循环完。也可以用 g 命令，直接跳到指定位置。</p><p>（T 命令在执行修改寄存器 SS 的指令时，下一条指令也紧接着执行）</p><h1 id=寄存器内存访问>寄存器（内存访问）</h1><p><strong>字单元</strong>：存放一个字型数据（16 位）的内存单元，由两个地址连续的内存单元组成。高地址存高位字节，低地址存地位字节。</p><h2 id=ds-和address>DS 和[address]</h2><p>DS 通常用来存放要访问数据的段地址。</p><p>将 10000H 中的数据读到 al 中 :</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>mov bx,1000H
+mov ds,bx
+mov al,[0]
+</code></pre></td></tr></table></div></div><p>mov 指令中的<code>[]</code>说明操作对象是一个内存单元,<code>[]</code>中的 <code>0</code> 说明偏移地址是 0，段地址默认是 <code>ds</code>。8086cpu 不支持将数据直接送入段寄存器，而是要用一个寄存器中转，即<code>mov ds,1000H</code>是非法的。</p><p><code>add</code>、<code>sub</code>对段寄存器都是非法的，即<code>add ds,ax</code>,<code>add ds,1</code>,<code>add, ds,[1]</code>都是非法的。</p><p>综上，段寄存器的相关操作有:</p><blockquote><p>mov 段寄存器，寄存器<br>mov 寄存器，段寄存器<br>mov 段寄存器，内存单元<br>mov 内存单元，段寄存器</p></blockquote><p>即段寄存器可以用 mov 与寄存器和内存单元进行操作（不能与数据），不能用<code>add</code>、<code>sub</code></p><h2 id=栈>栈</h2><p><code>push</code>入栈，<code>pop</code> 出栈，如<code>push ax</code>,<code>pop ax</code>，<br><code>SS:SP</code>用来指向栈顶元素。
+<img class=lazyload src=/svg/loading.min.svg data-src=https://upload-images.jianshu.io/upload_images/3378977-0b1a242fd61a2b76.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240 data-srcset="https://upload-images.jianshu.io/upload_images/3378977-0b1a242fd61a2b76.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240, https://upload-images.jianshu.io/upload_images/3378977-0b1a242fd61a2b76.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240 1.5x, https://upload-images.jianshu.io/upload_images/3378977-0b1a242fd61a2b76.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240 2x" data-sizes=auto alt=https://upload-images.jianshu.io/upload_images/3378977-0b1a242fd61a2b76.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240 title=入栈过程>
+如图，8086 入栈时，栈顶从高地址向低地址方向增长。因为任意时刻<code>SS：SP</code>指向栈顶，所以当栈为空时，<code>SS：SP</code>指向栈的最底部单元下面的单元。</p><p>pop 与 push 相反
+<img class=lazyload src=/svg/loading.min.svg data-src=https://upload-images.jianshu.io/upload_images/3378977-3327c4d48a4dc5a5.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240 data-srcset="https://upload-images.jianshu.io/upload_images/3378977-3327c4d48a4dc5a5.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240, https://upload-images.jianshu.io/upload_images/3378977-3327c4d48a4dc5a5.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240 1.5x, https://upload-images.jianshu.io/upload_images/3378977-3327c4d48a4dc5a5.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240 2x" data-sizes=auto alt=https://upload-images.jianshu.io/upload_images/3378977-3327c4d48a4dc5a5.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240 title=出栈过程></p><p>8086 不保证我们对栈的操作不会过界，我们只能自己注意。
+push 和 pop 操作形式有如下几种:</p><blockquote><p>push 寄存器/段寄存器/内存单元
+pop 寄存器/段寄存器/内存单元</p></blockquote><h2 id=段>段</h2><p>段是我们人为规定的。</p><ul><li>数据段：段地址放在 DS 中，用 mov、add、sub 等访问内存单元的指令时，cpu 就将我们单一的数据段中的内容当成数据来看。</li><li>代码段：段地址放在 CS 中，段中第一条指令的偏移地址放在 IP 中，cpu 将执行指令。</li><li>栈段：段地址放在 SS 中，栈顶元素的偏移地址放在 SP 中，cpu 进行站操作如 push、pop 时将栈段当做栈空间操作。</li></ul><p>一段内存可以既是代码段又是数据段，又是栈段，也可以都不是。这取决于 CS、IP、SS、SP、DS 的指向。</p><h1 id=第一个程序>第一个程序</h1><p>汇编语言源程序包含两种指令： 1.汇编指令：有对应机器码，可以被编译为机器指令，最终被 cpu 执行。 2.伪指令：没有对应机器码，不被 cpu 执行，由编译器来执行。</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span><span class=lnt>8
+</span><span class=lnt>9
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-asm data-lang=asm><span class=nf>assume</span> <span class=no>cs</span><span class=p>:</span><span class=no>abc</span>
+<span class=nf>abc</span> <span class=no>segment</span>
+    <span class=nf>mov</span> <span class=no>ax</span><span class=p>,</span><span class=mi>2</span>
+    <span class=nf>add</span> <span class=no>ax</span><span class=p>,</span><span class=no>ax</span>
+    <span class=nf>add</span> <span class=no>ax</span><span class=p>,</span><span class=no>ax</span>
+    <span class=nf>mov</span> <span class=no>ax</span><span class=p>,</span><span class=mi>4</span><span class=no>c00H</span>
+    <span class=nf>int</span> <span class=mi>21</span><span class=no>H</span>
+<span class=nf>abc</span> <span class=no>ends</span>
+<span class=nf>end</span>
+</code></pre></td></tr></table></div></div><h4 id=segment>segment</h4><p><code>segment</code>和 <code>ends</code>是一对成对使用的伪指令，是必须要用到的一对伪指令，用来定义一个段，使用格式为：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>段名 segment
+..
+段名 ends
+</code></pre></td></tr></table></div></div><p>一个汇编程序由多个段组成，这些段用来存放代码、数据或当做栈空间。一个有意义的汇编程序必须要有一个代码段。</p><h4 id=end>end</h4><p><code>end</code>是会变程序结束的标记，不要搞混<code>end</code>和<code>ends</code>，<code>ends</code>是和<code>segment</code>成对使用的。</p><h4 id=assume>assume</h4><p>这条伪指令含义是“假设”，它假设某一段寄存器和程序的某一个用<code>segment...ends</code>定义的段相关联。只要记住 assume 是将有特定用途的段和相关联的段寄存器关联起来即可。
+比如，用<code>cname segment... cname ends</code>定义了一个名为<code>cname</code>的段，在程序开头，用<code>assume cs:cname</code>将<code>cname</code>段和<code>cs</code>联系起来。</p><p>程序返回需要使用以下 2 条语句：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>mov ax,4c00H
+int 21H
+</code></pre></td></tr></table></div></div><h3 id=loop>loop</h3><p>作用是循环，cpu 执行 loop 的时候，进行 2 部操作： 1.（cx）=（cx）-1 2.判断 cx 中的值，不为 0 则转到标号处执行，否则向下执行</p><p>在汇编源程序中，数据不能以字母开头，所以要在前面加 0。如，9100h 可以直接写为<code>9100h</code>，而 A000h 则要写为<code>0A000h</code>
+程序加载后，ds 中存放着程序所在内存的段地址，偏移地址是 0。这个内存区前 256 个字节存放着的是 PSP，DOS 用来和程序进行通信，所以程序的地址可以表示为<code>DS+10H:0</code></p><p>and 是逻辑与命令，or 是逻辑或命令。</p><p>大小写转换：一个字母，无论是大小写，将它的第 5 位置 0，就变成大写，第 5 位置 1，就变成小写。</p><p>si 和 di 是 8086 中与 bx 功能相近的寄存器，si 和 di 不能分成 2 个 8 位寄存器。</p><p>一般来说，在需要暂存数据的时候，我们都应该使用栈。</p><h2 id=bxsidibp>bx，si，di，bp</h2><ul><li>在 8086 中，<strong>只有</strong>这 4 个寄存器可以用在<code>[...]</code>中来进行内存单元的寻址。</li><li>在<code>[...]</code>中，这 4 个寄存器可以单独出现，或只能以 4 种组合出现：
+1.bx 和 si
+2.bx 和 di
+3.bp 和 si
+4.bp 和 di</li><li>只要在<code>[...]</code>中使用 bp，而指令中没有显性给出段地址，那么段地址就默认在<code>ss</code>中。</li></ul><h2 id=数据在什么地方>数据在什么地方？</h2><p>1.立即数：在 CPU 的指令缓存器中，如：<code>mov ax,1</code> 2.寄存器：在寄存器中，如：<code>mov ax,bx</code> 3.段地址（SA）和偏移地址（EA），如：<code>mov ax,[0]</code>（段地址默认是<strong>ds</strong>），<code>mov ax,[bp]</code>（段地址默认是<strong>ss</strong>）</p><h2 id=数据有多长>数据有多长？</h2><p>数据有 2 种尺寸：<strong>byte</strong>和<strong>word</strong> 1.通过寄存器名指明要处理的数据的尺寸。
+如指明进行字操作：
+<code>mov ax,1</code>
+<code>mov ds:[0],ax</code>
+指明进行字节操作：
+<code>mov al,1</code>
+<code>mov ds:[0],al</code> 2.在没有寄存器名的情况下，用操作符<code>X ptr</code>指明内存单元的长度，X 可以为<code>word</code>或<code>byte</code>。如：
+用<code>word ptr</code>指明了指令访问的内存单元是一个字单元：
+<code>mov word ptr ds:[0],1</code>
+<code>inc word ptr [bx]</code>
+用<code>byte ptr</code>指明是一个字节单元：
+<code>mov byte ptr ds:[0],1</code>
+<code>inc byte ptr [bx]</code> 3.有些指令默认了访问的是字单元还是字节单元，如，<code>push [1000H]</code>，push 只进行字操作。</p><h2 id=div>div</h2><p>div 是除指令，要注意一下问题：</p><ol><li>除数：8 位和 16 位两种，在一个寄存器或内存单元中。</li><li>被除数：默认放在 AX 或 DX 和 AX 中，如果除数为 8 位，被除数位 16 位，默认放在 AX 中；如果除数为 16 位，被除数为 32 位，在 DX 和 AX 中存放，DX 存高 16 位，AX 存低 16 位。</li><li>结果：如果除数为 8 位，则 AL 存储除法操作的商，AH 存储除法操作的余数；如果除数为 16 位，则 AX 存放商，DX 存放余数。
+格式：</li></ol><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>div 寄存器
+div 内存单元
+</code></pre></td></tr></table></div></div><blockquote><p><code>div byte ptr ds:[0]</code>
+含义：（al）=（ax）/（（ds）*16+0）的商
+(ah）=（ax）/（（ds）*16+0）的余数</p></blockquote><blockquote><p><code>div word ptr es:[0]</code>
+含义：（ax）= [（dx）*10000H+（ax）] /（（es））*16+0）的商
+（dx）= [（dx）*10000H+（ax）] /（（es））*16+0）的余数</p></blockquote><h2 id=伪指令-dd>伪指令 dd</h2><ul><li>db：用来定义字节型数据</li><li>dw：用来定义字型数据</li><li>dd：用来定义双字（define double word）型数据</li></ul><h2 id=dup>dup</h2><p>dup 是一个操作符，它是和 db，dw，dd 配合使用的。如：</p><blockquote><p><code>db 3 dup (0)</code>
+定义了 3 个字节，值都是 0，相当于<code>db 0,0,0</code></p></blockquote><p>使用格式：</p><blockquote><p>db 重复的次数 dup （重复的字节型数据）
+dw 重复的次数 dup （重复的字型数据）
+dd 重复的次数 dup （重复的双字型数据）</p></blockquote><h1 id=转移指令的原理>转移指令的原理</h1><p><strong>可以修改 IP，或同时修改 CS 和 IP 的指令统称为转移指令</strong>。转移指令就是可以控制 cpu 执行内存中某处代码的指令。</p><p>8086 的转移行为有以下几类：</p><ul><li>只修改 IP，称为段内转移，如：<code>jmp ax</code></li><li>同时修改 CS 和 IP，称为段间转移，如：<code>jmp 1000:0</code></li></ul><p>段内转移又分为短转移和近转移：</p><ul><li>短转移 IP 的修改范围为-128~127</li><li>近转移 IP 的修改分为为-32768~32767</li></ul><p>转移指令有以下几类：</p><ul><li>无条件转移（如：jmp）</li><li>条件转移</li><li>循环转移（如：loop）</li><li>过程</li><li>中断</li></ul><p>这些转移的前提条件可能不同，但原理都相同。</p><h2 id=offset>offset</h2><p>由编译器处理，功能是取得标号的偏移地址。</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback> start: mov ax,offset start    ;相当于 mov ax,0（0是start的偏移地址）
+     s: mov ax,offset s        ;相当于 mov ax,3（3是s的偏移地址）
+</code></pre></td></tr></table></div></div><h2 id=jmp-指令>jmp 指令</h2><p>jmp 可以只修改 IP，也可以修改同时 CS 和 IP
+jmp 指令要给出两种信息： 1.转移的目的地址 2.转移的距离</p><h3 id=依据位移进行转移的-jmp-指令>依据位移进行转移的 jmp 指令</h3><p><code>jmp short 标号</code>（转到标号处），short 指明是段内短转移（8 位位移），所对应的机器码并不包含转移的目的地址，而是包含的转移的位移
+cpu 在指令 jmp 指令的时候，并不需要知道转移的目标地址。
+类似的，有<code>jmp near ptr 标号</code>，实现的是段内近转移（16 位位移）。
+位移 = 标号处的地址 - jmp 指令<strong>后</strong>的第一个字节的地址。</p><h3 id=依据转移的目的地址进行转移的-jmp-指令>依据转移的目的地址进行转移的 jmp 指令</h3><p><code>jmp far ptr 标号</code>实现的是段间转移，又称远转移
+功能：（cs）= 标号所在段地址，（ip）= 标号在段中的偏移地址
+机器码中有转移的目的地址</p><h3 id=转移地址在寄存器中的-jmp-指令>转移地址在寄存器中的 jmp 指令</h3><p>格式：jmp 16 位寄存器
+功能：（ip）= （16 位寄存器）</p><h3 id=转移地址在内存中的-jmp-指令>转移地址在内存中的 jmp 指令</h3><p>有两种：</p><ol><li><code>jmp word ptr 内存单元地址(段内地址)</code>
+功能：从内存单元地址处开始存放着一个字，是转移的目的偏移地址。
+如：</li></ol><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>mov ax,0123H
+mov [bx],ax
+jmp word ptr [bx]
+</code></pre></td></tr></table></div></div><p>执行后，（IP）= 0123H 2.<code>jmp dword ptr 内存单元地址(段内地址)</code>
+功能：从内存单元地址处开始存放着两个字，高地址是转移的目的段地址，低地址是转移的目的偏移地址。
+如：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>mov ax,0123H
+mov [bx],ax
+mov word ptr [bx+2],0
+jmp dword ptr [bx]
+</code></pre></td></tr></table></div></div><p>执行后，（CS）= 0，（IP）= 0123H</p><blockquote><p>注意：形如 <code>jmp 2000:1000</code>的转移指令，是在 Debug 中使用的汇编指令，汇编编译器并不认识，如在源程序中使用，将编译报错。</p></blockquote><h2 id=jcxz-指令>jcxz 指令</h2><p>为有条件转移指令，所有的有条件转移指令都是短转移，相应机器码都是包含的位移，而不是目的地址。
+格式：
+<code>jcxz 标号（如果（cx）=0，转移到标号处执行）</code>
+操作：
+<code>当（cx）=0时，（ip）=（ip）+8位位移</code>
+相当于</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>if (cx==0)
+  jmp short 标号
+</code></pre></td></tr></table></div></div><h2 id=loop-指令>loop 指令</h2><p>为循环指令，所有的循环指令都是短转移。
+格式：
+<code>loop 标号（（cx）= （cx）-1），如果（cx）!= 0，转移到标号处执行</code>
+操作： 1.（cx）=（cx）-1 2.如果（cx）!= 0 ，（ip）=（ip）+8 位位移
+相当于：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>cx--;
+if (cx!=0)
+  jmp short 标号;
+</code></pre></td></tr></table></div></div><h1 id=call-和-ret-指令>call 和 ret 指令</h1><p>call 和 ret 都是转移指令，都修改 IP，或同时修改 CS 和 IP。</p><h3 id=ret-和-retf>ret 和 retf</h3><ul><li>ret 指令用栈中数据，修改 IP 的内容，从而实现近转移</li><li>retf 指令用栈中数据，修改 CS 和 IP 的内容，从而实现远转移</li></ul><p>执行 ret 指令时，cpu 执行以下 2 部操作：</p><ol><li>ip=ss*10H+sp</li><li>sp=sp+2</li></ol><p><em>相当于<code>pop ip</code></em></p><p>执行 retf 指令时，进行下面 4 部操作：</p><ol><li>ip=ss*10H+sp</li><li>sp=sp+2</li><li>cs=ss*10H+sp</li><li>sp=sp+2</li></ol><p><em>相当于<code>pop ip ;pop cs</code></em></p><h3 id=call-指令>call 指令</h3><p>执行 call 指令时，进行 2 部操作：</p><ol><li>将当前 ip 或 cs 和 ip 压栈</li><li>转移</li></ol><p>call 不能实现短转移，除此之外，call 实现转移的方法和 jmp 相同:</p><ul><li><code>call 标号</code>：将当前 ip 压栈后，转到标号处执行,相当于：</li></ul><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>push ip
+jmp near ptr 标号
+</code></pre></td></tr></table></div></div><ul><li><code>call far ptr 标号</code>：实现段间转移,相当于：</li></ul><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>push cs
+push ip
+jmp far ptr 标号
+</code></pre></td></tr></table></div></div><ul><li><code>call 16位寄存器</code>：相当于：</li></ul><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>push ip
+jmp 16位寄存器
+</code></pre></td></tr></table></div></div><ul><li><code>call word ptr 内存单元地址</code>,相当于：</li></ul><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>push ip
+jmp word ptr 内存单元地址
+</code></pre></td></tr></table></div></div><ul><li><code>call dword ptr 内存单元地址</code>,相当于：</li></ul><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>push cs
+push ip
+jmp dword ptr 内存单元地址
+</code></pre></td></tr></table></div></div><h3 id=mul-指令>mul 指令</h3><p>mul 是乘法指令，要注意以下两点：</p><ol><li>两个相乘的数：要么都是 8 位，要么都是 16 位。如果是 8 位，一个放在 al，一个放在 8 位寄存器或内存字节单元中；若是 16 位，一个在 ax，一个在 16 位寄存器中。</li><li>结果：如果是 8 位乘法，结果默认放在 ax 中；如果是 16 位，结果高位放在 dx，低位放在 ax。</li></ol><p>解决除法溢出的方法：</p><blockquote><p>X/N = int( H/N)*65536 + [rem( H/N )*65536 + L ] / N
+X:被除数，N：除数，H：高 16 位，L：低 16 位，int：取商，rem：取余数</p></blockquote><h1 id=标志寄存器>标志寄存器</h1><h2 id=zf-标志zero-flag>ZF 标志（zero flag）</h2><p>flag 第 6 位是 ZF，零标志位。它记录执行相关指令后，其结果是否为 0。为 0 则 zf=1，否则 zf=0。
+注意：8086 中，有些指令是影响 flag 的，比如：add、sub、mul、div、inc、or、and 等，它们大多是运算指令（逻辑或算数运算）；有一些则对 flag 没影响，如：mov，push，pop 等，大多是传送指令。</p><h2 id=pf-标志parity-flag>PF 标志（Parity flag）</h2><p>flag 第 2 位是 PF，奇偶标志位。看执行结果的所有 bit 位中 1 的个数是否是偶数。是偶数则 pf=1，否则 pf=0。
+可以理解成 1 偶标志位。</p><h2 id=sf-标志位sign-flag>SF 标志位（Sign Flag）</h2><p>flag 第 7 位是 SF，符号标志位。记录相关指令执行后结果是否为负。如果为负，sf=1；否则 sf=0
+注意：sg 是 cpu 默认将数据当成<strong>有符号</strong>运算结果的记录。如果我们将数据当做无符号时，sf 时没有意义的，虽然相关指令可能影响了它的值。是不是有符号运算取决于我们。</p><h2 id=cf-标志位carry-flag>CF 标志位（Carry Flag）</h2><p>flag 第 0 位是 CF 标志位。一般情况下，在进行<strong>无符号数</strong>运算时，它记录了运算结果的最高有效位向更高位的进位值，或借位值。
+inc 和 loop 指令不影响 cf</p><h2 id=of-标志位overflow-flag>OF 标志位（Overflow Flag）</h2><p>flag 第 11 位是 OF，溢出标志位。记录了<strong>有符号</strong>运算的结果是否溢出。有溢出 of=1，否则 of=0；</p><blockquote><p>注意和 CF 的区别：
+cf 是对<strong>无</strong>符号数运算有意义的标志位
+of 是对<strong>有</strong>符号数运算有意义的标志位</p></blockquote><h2 id=adc-指令>adc 指令</h2><p>adc 是带进位加法指令，它利用了 CF 位上记录的进位值。(add +carry &ndash;> adc)如：
+<code>adc ax,bx</code>实现的功能是<code>ax=ax+bx+cf</code>。
+cpu 提供 adc 的目的，就是来进行加法的第二步运算的。</p><h2 id=sbb-指令>sbb 指令</h2><p>sbb 是带借位减法指令（sub borrow），利用 cf 记录的借位值。
+<code>sbb ax,bx</code>实现的功能是<code>ax=ax-bx-cf</code>。
+cpu 提供 dbb 的目的，就是来进行减法的第二步运算的。</p><h2 id=cmp-指令>cmp 指令</h2><p>cmp 是比较指令，相当于减法指令，只是不保留结果。cmp 会对 flag 产生影响。如：
+<code>cmp ax,ax</code>做<code>ax-ax</code>运算，但并不在 ax 中保存，仅影响 flag。
+进行·cmp ax,bx·比较后，通过 flag 可以看出比较结果</p><ul><li>zf=1:ax=bx</li><li>cf=1:ax&lt;bx</li><li>cf=0:ax>=bx</li><li>cf=0 且 zf=0:ax>bx</li><li>cf=1 或 zf=1:ax&lt;=bx</li></ul><p>注意：单纯的看 sf 的值不能判断结果的正负，因为可能会发生溢出。
+而通过 sf 和 of 的值可以判断。</p><ol><li>sf=1，of=0：没发生溢出，实际结果负，则逻辑结果也为负</li><li>sf=0，of=0：同上，逻辑结果非负</li><li>sf=1，of=1：有溢出，则实际与逻辑相反，逻辑为正。</li><li>sf=0，of=1：实际结果非负，又 of=1，则结果非 0，所以实际为正，逻辑结果为负。</li></ol><h2 id=条件转移指令>条件转移指令</h2><p>通常配合 cmp，由 cmp 先进行比较，改变了 flag 中的值，条件转移指令根据 flag 中的值执行。
+下面根据<strong>无符号</strong>数的比较进行转移的有：
+| 指令 | 含义 | 条件 |
+| &mdash;- | &mdash;&mdash;&mdash;&mdash; | &mdash;&mdash;&mdash;&mdash;&ndash; |
+| je | 等于则转移 | 由 zf=1 则转移 |
+| jne | 不等于则转移 | zf=0 |
+| jb | 低于则转移 | cf=1 |
+| jnb | 不低于则转移 | cf=0 |
+| ja | 高于则转移 | cf=0 且 zf=0 |
+| jna | 不高于则转移 | cf=1 或 zf=1 |</p><h2 id=df-标志和串传送指令>DF 标志和串传送指令</h2><p>flag 第 10 位是 DF，方向寄存器。在串处理指令中，控制每次操作后 si、di 的增减</p><ul><li>df=0：每次操作后 si、di 递增</li><li>df=1：每次操作后 si、di 递减</li></ul><h3 id=movsb-指令>movsb 指令</h3><p>格式：movsb
+相当于：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>mov es:[di],byte ptr ds:[si];（8086不支持这样的命令，这里只是描述）
+if df = 0:
+  inc si
+  inc di
+elif df = 1:
+  dec si
+  dec di
+</code></pre></td></tr></table></div></div><h3 id=movsw>movsw</h3><p>类似上面，就是 si,di 每次加或减 2</p><p><code>movsb</code>和<code>movsw</code>进行的是串传送的一个步骤，通常配合<code>rep</code>使用,如：
+<code>rep movsb</code>，相当于：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>s:movsb
+  loop s
+</code></pre></td></tr></table></div></div><p>可见<code>rep</code>是根据 cx 的值，重复执行后面的串传送指令。</p><ul><li>cld 指令：可以将 df 置 0</li><li>std 指令：可以将 df 置 1</li></ul><h2 id=pushf-和-poopf>pushf 和 poopf</h2><p>pushf 功能是将标志寄存器的值压栈，popf 是从栈中弹出数据给标志寄存器中。
+通过 pushf 和 popf，可以直接访问 flag</p><h1 id=call-和-ret-指令-1>call 和 ret 指令</h1><p>call 和 ret 都是转移指令，都修改 IP，或同时修改 CS 和 IP。</p><h3 id=ret-和-retf-1>ret 和 retf</h3><ul><li>ret 指令用栈中数据，修改 IP 的内容，从而实现近转移</li><li>retf 指令用栈中数据，修改 CS 和 IP 的内容，从而实现远转移</li></ul><p>执行 ret 指令时，cpu 执行以下 2 部操作：</p><ol><li>ip=ss*10H+sp</li><li>sp=sp+2</li></ol><p><em>相当于<code>pop ip</code></em></p><p>执行 retf 指令时，进行下面 4 部操作：</p><ol><li>ip=ss*10H+sp</li><li>sp=sp+2</li><li>cs=ss*10H+sp</li><li>sp=sp+2</li></ol><p><em>相当于<code>pop ip ;pop cs</code></em></p><h3 id=call-指令-1>call 指令</h3><p>执行 call 指令时，进行 2 部操作：</p><ol><li>将当前 ip 或 cs 和 ip 压栈</li><li>转移</li></ol><p>call 不能实现短转移，除此之外，call 实现转移的方法和 jmp 相同:</p><ul><li><code>call 标号</code>：将当前 ip 压栈后，转到标号处执行,相当于：</li></ul><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>push ip
+jmp near ptr 标号
+</code></pre></td></tr></table></div></div><ul><li><code>call far ptr 标号</code>：实现段间转移,相当于：</li></ul><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>push cs
+push ip
+jmp far ptr 标号
+</code></pre></td></tr></table></div></div><ul><li><code>call 16位寄存器</code>：相当于：</li></ul><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>push ip
+jmp 16位寄存器
+</code></pre></td></tr></table></div></div><ul><li><code>call word ptr 内存单元地址</code>,相当于：</li></ul><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>push ip
+jmp word ptr 内存单元地址
+</code></pre></td></tr></table></div></div><ul><li><code>call dword ptr 内存单元地址</code>,相当于：</li></ul><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>push cs
+push ip
+jmp dword ptr 内存单元地址
+</code></pre></td></tr></table></div></div><h3 id=mul-指令-1>mul 指令</h3><p>mul 是乘法指令，要注意以下两点：</p><ol><li>两个相乘的数：要么都是 8 位，要么都是 16 位。如果是 8 位，一个放在 al，一个放在 8 位寄存器或内存字节单元中；若是 16 位，一个在 ax，一个在 16 位寄存器中。</li><li>结果：如果是 8 位乘法，结果默认放在 ax 中；如果是 16 位，结果高位放在 dx，低位放在 ax。</li></ol><p>解决除法溢出的方法：</p><blockquote><p>X/N = int( H/N)*65536 + [rem( H/N )*65536 + L ] / N
+X:被除数，N：除数，H：高 16 位，L：低 16 位，int：取商，rem：取余数</p></blockquote><h1 id=标志寄存器-1>标志寄存器</h1><h2 id=zf-标志zero-flag-1>ZF 标志（zero flag）</h2><p>flag 第 6 位是 ZF，零标志位。它记录执行相关指令后，其结果是否为 0。为 0 则 zf=1，否则 zf=0。
+注意：8086 中，有些指令是影响 flag 的，比如：add、sub、mul、div、inc、or、and 等，它们大多是运算指令（逻辑或算数运算）；有一些则对 flag 没影响，如：mov，push，pop 等，大多是传送指令。</p><h2 id=pf-标志parity-flag-1>PF 标志（Parity flag）</h2><p>flag 第 2 位是 PF，奇偶标志位。看执行结果的所有 bit 位中 1 的个数是否是偶数。是偶数则 pf=1，否则 pf=0。
+可以理解成 1 偶标志位。</p><h2 id=sf-标志位sign-flag-1>SF 标志位（Sign Flag）</h2><p>flag 第 7 位是 SF，符号标志位。记录相关指令执行后结果是否为负。如果为负，sf=1；否则 sf=0
+注意：sg 是 cpu 默认将数据当成<strong>有符号</strong>运算结果的记录。如果我们将数据当做无符号时，sf 时没有意义的，虽然相关指令可能影响了它的值。是不是有符号运算取决于我们。</p><h2 id=cf-标志位carry-flag-1>CF 标志位（Carry Flag）</h2><p>flag 第 0 位是 CF 标志位。一般情况下，在进行<strong>无符号数</strong>运算时，它记录了运算结果的最高有效位向更高位的进位值，或借位值。
+inc 和 loop 指令不影响 cf</p><h2 id=of-标志位overflow-flag-1>OF 标志位（Overflow Flag）</h2><p>flag 第 11 位是 OF，溢出标志位。记录了<strong>有符号</strong>运算的结果是否溢出。有溢出 of=1，否则 of=0；</p><blockquote><p>注意和 CF 的区别：
+cf 是对<strong>无</strong>符号数运算有意义的标志位
+of 是对<strong>有</strong>符号数运算有意义的标志位</p></blockquote><h2 id=adc-指令-1>adc 指令</h2><p>adc 是带进位加法指令，它利用了 CF 位上记录的进位值。(add +carry &ndash;> adc)如：
+<code>adc ax,bx</code>实现的功能是<code>ax=ax+bx+cf</code>。
+cpu 提供 adc 的目的，就是来进行加法的第二步运算的。</p><h2 id=sbb-指令-1>sbb 指令</h2><p>sbb 是带借位减法指令（sub borrow），利用 cf 记录的借位值。
+<code>sbb ax,bx</code>实现的功能是<code>ax=ax-bx-cf</code>。
+cpu 提供 dbb 的目的，就是来进行减法的第二步运算的。</p><h2 id=cmp-指令-1>cmp 指令</h2><p>cmp 是比较指令，相当于减法指令，只是不保留结果。cmp 会对 flag 产生影响。如：
+<code>cmp ax,ax</code>做<code>ax-ax</code>运算，但并不在 ax 中保存，仅影响 flag。
+进行·cmp ax,bx·比较后，通过 flag 可以看出比较结果</p><ul><li>zf=1:ax=bx</li><li>cf=1:ax&lt;bx</li><li>cf=0:ax>=bx</li><li>cf=0 且 zf=0:ax>bx</li><li>cf=1 或 zf=1:ax&lt;=bx</li></ul><p>注意：单纯的看 sf 的值不能判断结果的正负，因为可能会发生溢出。
+而通过 sf 和 of 的值可以判断。</p><ol><li>sf=1，of=0：没发生溢出，实际结果负，则逻辑结果也为负</li><li>sf=0，of=0：同上，逻辑结果非负</li><li>sf=1，of=1：有溢出，则实际与逻辑相反，逻辑为正。</li><li>sf=0，of=1：实际结果非负，又 of=1，则结果非 0，所以实际为正，逻辑结果为负。</li></ol><h2 id=条件转移指令-1>条件转移指令</h2><p>通常配合 cmp，由 cmp 先进行比较，改变了 flag 中的值，条件转移指令根据 flag 中的值执行。
+下面根据<strong>无符号</strong>数的比较进行转移的有：
+| 指令 | 含义 | 条件 |
+| &mdash;- | &mdash;&mdash;&mdash;&mdash; | &mdash;&mdash;&mdash;&mdash;&ndash; |
+| je | 等于则转移 | 由 zf=1 则转移 |
+| jne | 不等于则转移 | zf=0 |
+| jb | 低于则转移 | cf=1 |
+| jnb | 不低于则转移 | cf=0 |
+| ja | 高于则转移 | cf=0 且 zf=0 |
+| jna | 不高于则转移 | cf=1 或 zf=1 |</p><h2 id=df-标志和串传送指令-1>DF 标志和串传送指令</h2><p>flag 第 10 位是 DF，方向寄存器。在串处理指令中，控制每次操作后 si、di 的增减</p><ul><li>df=0：每次操作后 si、di 递增</li><li>df=1：每次操作后 si、di 递减</li></ul><h3 id=movsb-指令-1>movsb 指令</h3><p>格式：movsb
+相当于：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>mov es:[di],byte ptr ds:[si];（8086不支持这样的命令，这里只是描述）
+if df = 0:
+  inc si
+  inc di
+elif df = 1:
+  dec si
+  dec di
+</code></pre></td></tr></table></div></div><h3 id=movsw-1>movsw</h3><p>类似上面，就是 si,di 每次加或减 2</p><p><code>movsb</code>和<code>movsw</code>进行的是串传送的一个步骤，通常配合<code>rep</code>使用,如：
+<code>rep movsb</code>，相当于：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>s:movsb
+  loop s
+</code></pre></td></tr></table></div></div><p>可见<code>rep</code>是根据 cx 的值，重复执行后面的串传送指令。</p><ul><li>cld 指令：可以将 df 置 0</li><li>std 指令：可以将 df 置 1</li></ul><h2 id=pushf-和-poopf-1>pushf 和 poopf</h2><p>pushf 功能是将标志寄存器的值压栈，popf 是从栈中弹出数据给标志寄存器中。
+通过 pushf 和 popf，可以直接访问 flag</p></div><div class=post-footer id=post-footer><div class=post-info><div class=post-info-line><div class=post-info-mod><span>Updated on 2019-12-25</span></div><div class=post-info-license></div></div><div class=post-info-line><div class=post-info-md><span><a class=link-to-markdown href=/2019/12/%E6%B1%87%E7%BC%96%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/index.md target=_blank>Read Markdown</a></span></div><div class=post-info-share><span><a href=javascript:void(0); title="Share on Twitter" data-sharer=twitter data-url=https://jesse996.github.io/2019/12/%E6%B1%87%E7%BC%96%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/ data-title=汇编学习笔记 data-hashtags=汇编><i class="fab fa-twitter fa-fw"></i></a><a href=javascript:void(0); title="Share on Facebook" data-sharer=facebook data-url=https://jesse996.github.io/2019/12/%E6%B1%87%E7%BC%96%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/ data-hashtag=汇编><i class="fab fa-facebook-square fa-fw"></i></a><a href=javascript:void(0); title="Share on WhatsApp" data-sharer=whatsapp data-url=https://jesse996.github.io/2019/12/%E6%B1%87%E7%BC%96%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/ data-title=汇编学习笔记 data-web><i class="fab fa-whatsapp fa-fw"></i></a><a href=javascript:void(0); title="Share on Line" data-sharer=line data-url=https://jesse996.github.io/2019/12/%E6%B1%87%E7%BC%96%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/ data-title=汇编学习笔记><i data-svg-src=https://cdn.jsdelivr.net/npm/simple-icons@2.14.0/icons/line.svg></i></a><a href=javascript:void(0); title="Share on 微博" data-sharer=weibo data-url=https://jesse996.github.io/2019/12/%E6%B1%87%E7%BC%96%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/ data-title=汇编学习笔记><i class="fab fa-weibo fa-fw"></i></a><a href=javascript:void(0); title="Share on Myspace" data-sharer=myspace data-url=https://jesse996.github.io/2019/12/%E6%B1%87%E7%BC%96%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/ data-title=汇编学习笔记 data-description><i data-svg-src=https://cdn.jsdelivr.net/npm/simple-icons@2.14.0/icons/myspace.svg></i></a><a href=javascript:void(0); title="Share on Blogger" data-sharer=blogger data-url=https://jesse996.github.io/2019/12/%E6%B1%87%E7%BC%96%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/ data-title=汇编学习笔记 data-description><i class="fab fa-blogger fa-fw"></i></a><a href=javascript:void(0); title="Share on Evernote" data-sharer=evernote data-url=https://jesse996.github.io/2019/12/%E6%B1%87%E7%BC%96%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/ data-title=汇编学习笔记><i class="fab fa-evernote fa-fw"></i></a></span></div></div></div><div class=post-info-more><section class=post-tags><i class="fas fa-tags fa-fw"></i>&nbsp;<a href=/tags/%E6%B1%87%E7%BC%96/>汇编</a></section><section><span><a href=javascript:void(0); onclick=window.history.back();>Back</a></span>&nbsp;|&nbsp;<span><a href=/>Home</a></span></section></div><div class=post-nav><a href=/2020/08/%E8%83%8C%E5%8C%85%E9%97%AE%E9%A2%98/ class=next rel=next title=背包问题>背包问题<i class="fas fa-angle-right fa-fw"></i></a></div></div><div id=comments><div id=disqus_thread class=comment></div><noscript>Please enable JavaScript to view the comments powered by <a href=https://disqus.com/?ref_noscript>Disqus</a>.</noscript></div></article></div></main><footer class=footer><div class=footer-container><div class=footer-line>Powered by <a href=https://gohugo.io/ target=_blank rel="noopener noreffer" title="Hugo 0.74.3">Hugo</a> | Theme - <a href=https://github.com/dillonzq/LoveIt target=_blank rel="noopener noreffer" title="LoveIt 0.2.10"><i class="far fa-kiss-wink-heart fa-fw"></i>LoveIt</a></div><div class=footer-line><i class="far fa-copyright fa-fw"></i><span itemprop=copyrightYear>2020</span><span class=author itemprop=copyrightHolder>&nbsp;<a href=https://github.com/jesse996 target=_blank>Jesse</a></span>&nbsp;|&nbsp;<span class=license><a rel="license external nofollow noopener noreffer" href=https://creativecommons.org/licenses/by-nc/4.0/ target=_blank>CC BY-NC 4.0</a></span></div></div></footer></div><div id=fixed-buttons><a href=# id=back-to-top class=fixed-button title="Back to Top"><i class="fas fa-arrow-up fa-fw"></i></a><a href=# id=view-comments class=fixed-button title="View Comments"><i class="fas fa-comment fa-fw"></i></a></div><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/katex.min.css><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/contrib/copy-tex.min.css><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.css><script type=text/javascript src=https://Jesse.disqus.com/embed.js defer></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/smooth-scroll@16.1.3/dist/smooth-scroll.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/autocomplete.js@0.37.1/dist/autocomplete.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lunr@2.3.8/lunr.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lazysizes@5.2.2/lazysizes.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/sharer.js@0.4.0/sharer.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/katex.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/contrib/auto-render.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/contrib/copy-tex.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/contrib/mhchem.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.js></script><script type=text/javascript>window.config={"code":{"copyTitle":"Copy to clipboard","maxShownLines":10},"comment":{},"cookieconsent":{"content":{"dismiss":"Got it!","link":"Learn more","message":"This website uses Cookies to improve your experience."},"enable":true,"palette":{"button":{"background":"#f0f0f0"},"popup":{"background":"#1aa3ff"}},"theme":"edgeless"},"math":{"delimiters":[{"display":true,"left":"$$","right":"$$"},{"display":true,"left":"\\[","right":"\\]"},{"display":false,"left":"$","right":"$"},{"display":false,"left":"\\(","right":"\\)"}],"strict":false},"search":{"highlightTag":"em","lunrIndexURL":"/index.json","maxResultLength":10,"noResultsFound":"No results found","snippetLength":50,"type":"lunr"}};</script><script type=text/javascript src=/js/theme.min.js></script></body></html>
