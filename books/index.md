@@ -66,7 +66,7 @@
 -   [x] JavaScript 函数式编程
 -   [x] The Linux Command Line
 -   [x] 鸟哥的 Linux 私房菜
--   [x] vue.js 实战
+-   [x] Vue.js 实战
 -   [x] JavaScript DOM 编程艺术
 -   [x] 永恒的终结
 -   [x] 人间失格
