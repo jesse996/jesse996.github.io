@@ -1,6 +1,10 @@
 # 树莓派笔记
 
 
+{{< music auto="https://music.163.com/#/playlist?id=60198" >}}
+{{< script >}}
+console.log('Hello LoveIt!');
+{{< /script >}}
 **1.添加 wpa_supplicant.conf 文件**
 
 在 boot 分区下添加 wpa_supplicant.conf 文件，文件内容写入
@@ -23,13 +27,13 @@ network={
 
 启动后树莓会自动链接 wifi，但是有个问题，不知道树莓的自动获取的 ip
 
-方法 1（未尝试）：
+方法 1：
 
 如果网络中只有一个 pi，可以直接
 
 ping raspberrypi
 
-方法 2（未尝试）：
+方法 2：
 
 nmap -sn 192.168.1.0/24
 
