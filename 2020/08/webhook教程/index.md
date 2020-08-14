@@ -89,10 +89,10 @@ pm2 start webhook.js
 # GitHub Webhook 配置
 
 在 github 仓库的`Setting-webhooks`新建一个 webhook,`Content Type` 为 `application/json`，`secret` 设置成与 webhook.js 中的相同。
-![图](https://pic.ioiox.com/image/CN5c)
+![图](https://pic.ioiox.com/images/2020/08/14/d3c54fca3bba23fd047e055d158b412b.png)
 
 # 验证
 
 如果如图表示成功
-![图](https://pic.ioiox.com/image/CYJn)
+![图](https://pic.ioiox.com/images/2020/08/14/7cb03e8a03c5ec0be68bb7d4b94fb8ec.png)
 
