@@ -98,12 +98,3 @@ pm2 start webhook.js
 
 {{<image src="https://pic.ioiox.com/images/2020/08/14/7cb03e8a03c5ec0be68bb7d4b94fb8ec.png" caption="图">}}
 
-<div id="particles-js"></div>
-<script src="/particles.js"></script>
-
-<script>
-particlesJS.load('particles-js', '/particles.json', function() {
-console.log('callback - particles.js config loaded');
-});
-</script>
-
