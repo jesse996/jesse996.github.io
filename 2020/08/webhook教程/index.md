@@ -92,7 +92,7 @@ pm2 start webhook.js
 
 <!-- ![图](https://pic.ioiox.com/images/2020/08/14/d3c54fca3bba23fd047e055d158b412b.png) -->
 
-{{image src="https://pic.ioiox.com/images/2020/08/14/d3c54fca3bba23fd047e055d158b412b.md.png" caption="图"}}
+{{<image src="https://pic.ioiox.com/images/2020/08/14/d3c54fca3bba23fd047e055d158b412b.png" caption="图">}}
 
 # 验证
 
@@ -100,5 +100,5 @@ pm2 start webhook.js
 
 <!-- ![图](https://pic.ioiox.com/images/2020/08/14/7cb03e8a03c5ec0be68bb7d4b94fb8ec.png) -->
 
-{{image src="https://pic.ioiox.com/images/2020/08/14/7cb03e8a03c5ec0be68bb7d4b94fb8ec.png" caption="图"}}
+{{<image src="https://pic.ioiox.com/images/2020/08/14/7cb03e8a03c5ec0be68bb7d4b94fb8ec.png" caption="图">}}
 
