@@ -18,7 +18,15 @@ git pull
 
 ```
 
-在同意目录下新建 webhook.js 文件
+注意要添加执行权限
+
+```
+chmod +x deploy.sh
+```
+
+# 在定义一个 webhook.js 文件
+
+在同一目录下新建 webhook.js 文件
 
 ```js
 var http = require('http')
