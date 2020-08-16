@@ -108,8 +108,8 @@ LSLLSLLS
 
 -   s[n]=="#",type[n]=S_TYPE,type[n-1]=L_TYPE
 -   if s[i]==s[i+1] type[i]=type[i+1]
--   if s[i]>s[i+1] type[i]=S_TYPE
--   if s[i]<s[i+1] type[i]=L_TYPE
+-   if s[i]>s[i+1] type[i]=L_TYPE
+-   if s[i]<s[i+1] type[i]=S_TYPE
 
 比如：
 

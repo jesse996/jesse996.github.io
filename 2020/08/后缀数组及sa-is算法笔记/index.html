@@ -125,7 +125,7 @@
 <span class=o>&gt;&gt;&gt;</span> <span class=n>showTypeMap</span><span class=p>(</span><span class=sa>b</span><span class=s1>&#39;cabbage&#39;</span><span class=p>)</span>
 <span class=n>cabbage</span>
 <span class=n>LSLLSLLS</span>
-</code></pre></td></tr></table></div></div><p>总结如下：</p><ul><li>s[n]==&rdquo;#",type[n]=S_TYPE,type[n-1]=L_TYPE</li><li>if s[i]==s[i+1] type[i]=type[i+1]</li><li>if s[i]>s[i+1] type[i]=S_TYPE</li><li>if s[i]&lt;s[i+1] type[i]=L_TYPE</li></ul><p>比如：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
+</code></pre></td></tr></table></div></div><p>总结如下：</p><ul><li>s[n]==&rdquo;#",type[n]=S_TYPE,type[n-1]=L_TYPE</li><li>if s[i]==s[i+1] type[i]=type[i+1]</li><li>if s[i]>s[i+1] type[i]=L_TYPE</li><li>if s[i]&lt;s[i+1] type[i]=S_TYPE</li></ul><p>比如：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
 </span><span class=lnt>2
 </span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>s:    &#34;cabbage&#34;
 type: &#34;LSLLSLLS&#34;
