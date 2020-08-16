@@ -59,6 +59,51 @@ static int lcp(String a,String b){
 
 规定最右边是一个空的（用`#`来表示），且它是 S 型。那么倒数第二个后缀，也就是不为空的最后一个字母是 L 型
 
+我们可以写一个函数，接受一个字符串，并按照上面的规则映射出源字符串的每个字符是 S 型还是 L 型。
+
+```python
+>>> def buildTypeMap(data):
+...     """
+...     Builds a map marking each suffix of the data as S_TYPE or L_TYPE.
+...     """
+...     # The map should contain one more entry than there are characters
+...     # in the string, because we also need to store the type of the
+...     # empty suffix between the last character and the end of the
+...     # string.
+...     res = bytearray(len(data) + 1)
+...
+...     # The empty suffix after the last character is S_TYPE
+...     res[-1] = S_TYPE
+...
+...     # If this is an empty string...
+...     if not len(data):
+...         # ...there are no more characters, so we're done.
+...         return res
+...
+...     # The suffix containing only the last character must necessarily
+...     # be larger than the empty suffix.
+...     res[-2] = L_TYPE
+...
+...     # Step through the rest of the string from right to left.
+...     for i in range(len(data)-2, -1, -1):
+...         if data[i] > data[i+1]:
+...             res[i] = L_TYPE
+...         elif data[i] == data[i+1] and res[i+1] == L_TYPE:
+...             res[i] = L_TYPE
+...         else:
+...             res[i] = S_TYPE
+...
+...     return res
+
+>>> def showTypeMap(data):
+...     print(data.decode('ascii'))
+...     print(buildTypeMap(data).decode('ascii'))
+
+>>> showTypeMap(b'cabbage')
+cabbage
+LSLLSLLS
+```
+
 总结如下：
 
 -   s[n]=="#",type[n]=S_TYPE,type[n-1]=L_TYPE
@@ -96,6 +141,22 @@ LSLLSLLS
 ...         return True
 ...
 ...     return False
+
+>>> def showTypeMap(data):
+...     typemap = buildTypeMap(data)
+...
+...     print(data.decode('ascii'))
+...     print(typemap.decode('ascii'))
+...
+...     print("".join(
+...             "^" if isLMSChar(i, typemap) else " "
+...             for i in range(len(typemap))
+...         ))
+
+>>> showTypeMap(b'cabbage')
+cabbage
+LSLLSLLS
+ ^  ^  ^
 ```
 
 ### LMS 子串
@@ -133,6 +194,7 @@ LMS 子串就是从一个 LMS 字符开始到下一个 LMS 字符（不包括下
 ...             return False
 ...
 ...         i += 1
+
 ```
 
 ### 桶排序
@@ -165,6 +227,11 @@ LMS 子串就是从一个 LMS 字符开始到下一个 LMS 字符（不包括下
 ...         offset += size
 ...
 ...     return res
+
+>>> encoded_cabbage = [2, 0, 1, 1, 0, 6, 4]
+>>> findBucketSizes(encoded_cabbage, 7)
+[2, 2, 1, 0, 1, 0, 1]
+
 >>> cabbage_buckets = findBucketSizes(encoded_cabbage, 7)
 >>> findBucketHeads(cabbage_buckets)
 [1, 3, 5, 6, 6, 7, 7]
@@ -182,6 +249,7 @@ LMS 子串就是从一个 LMS 字符开始到下一个 LMS 字符（不包括下
 ...         res.append(offset - 1)
 ...
 ...     return res
+
 >>> findBucketTails(cabbage_buckets)
 [2, 4, 5, 5, 6, 6, 7]
 ```
