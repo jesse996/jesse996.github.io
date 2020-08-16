@@ -1,0 +1,965 @@
+<!doctype html><html lang=zh-cn><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><meta name=robots content="noodp"><meta http-equiv=x-ua-compatible content="IE=edge, chrome=1"><title>后缀数组及SA-IS算法笔记 - Jesse's Blog</title><meta name=Description content="Jesse的博客"><meta property="og:title" content="后缀数组及SA-IS算法笔记"><meta property="og:description" content="定义 字符串 字符串s连续的一段字符组成的串叫做字符串，更广义地，任何一个由可比较大小的元素组成的数组都可称为字符串。字符串的下标从0开始，长度"><meta property="og:type" content="article"><meta property="og:url" content="https://www.jesse233.top/2020/08/%E5%90%8E%E7%BC%80%E6%95%B0%E7%BB%84%E5%8F%8Asa-is%E7%AE%97%E6%B3%95%E7%AC%94%E8%AE%B0/"><meta property="og:image" content="https://www.jesse233.top/avatar.png"><meta property="article:published_time" content="2020-08-15T15:02:07+08:00"><meta property="article:modified_time" content="2020-08-15T15:02:07+08:00"><meta name=twitter:card content="summary_large_image"><meta name=twitter:image content="https://www.jesse233.top/avatar.png"><meta name=twitter:title content="后缀数组及SA-IS算法笔记"><meta name=twitter:description content="定义 字符串 字符串s连续的一段字符组成的串叫做字符串，更广义地，任何一个由可比较大小的元素组成的数组都可称为字符串。字符串的下标从0开始，长度"><meta name=application-name content="LoveIt"><meta name=apple-mobile-web-app-title content="LoveIt"><meta name=theme-color content="#ffffff"><meta name=msapplication-TileColor content="#da532c"><link rel=icon href=/favicon.svg><link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png><link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5><link rel=manifest href=/site.webmanifest><link rel=canonical href=https://www.jesse233.top/2020/08/%E5%90%8E%E7%BC%80%E6%95%B0%E7%BB%84%E5%8F%8Asa-is%E7%AE%97%E6%B3%95%E7%AC%94%E8%AE%B0/><link rel=prev href=https://www.jesse233.top/2020/08/webhook%E6%95%99%E7%A8%8B/><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/normalize.css@8.0.1/normalize.min.css><link rel=stylesheet href=/css/style.min.css><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.13.0/css/all.min.css><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/animate.css@3.7.2/animate.min.css><meta name=baidu-site-verification content="yJZ8DYA9pA"><script type=application/ld+json>{"@context":"http://schema.org","@type":"BlogPosting","headline":"后缀数组及SA-IS算法笔记","inLanguage":"zh-CN","mainEntityOfPage":{"@type":"WebPage","@id":"https:\/\/www.jesse233.top\/2020\/08\/%E5%90%8E%E7%BC%80%E6%95%B0%E7%BB%84%E5%8F%8Asa-is%E7%AE%97%E6%B3%95%E7%AC%94%E8%AE%B0\/"},"genre":"posts","keywords":"SA-IS","wordcount":7831,"url":"https:\/\/www.jesse233.top\/2020\/08\/%E5%90%8E%E7%BC%80%E6%95%B0%E7%BB%84%E5%8F%8Asa-is%E7%AE%97%E6%B3%95%E7%AC%94%E8%AE%B0\/","datePublished":"2020-08-15T15:02:07+08:00","dateModified":"2020-08-15T15:02:07+08:00","publisher":{"@type":"Organization","name":"宋志新"},"author":{"@type":"Person","name":"Jesse"},"description":""}</script></head><body header-desktop=fixed header-mobile=auto><script type=text/javascript>(window.localStorage&&localStorage.getItem('theme')?localStorage.getItem('theme')==='dark':('auto'==='auto'?window.matchMedia('(prefers-color-scheme: dark)').matches:'auto'==='dark'))&&document.body.setAttribute('theme','dark');</script><div id=mask></div><div class=wrapper><header class=desktop id=header-desktop><div class=header-wrapper><div class=header-title><a href=/ title="Jesse's Blog"><img class="lazyload logo" src=/svg/loading.min.svg data-src=/favicon.svg data-srcset="/favicon.svg, /favicon.svg 1.5x, /favicon.svg 2x" data-sizes=auto alt=/favicon.svg title=/favicon.svg>Jesse's Blog</a></div><div class=menu><div class=menu-inner><a class=menu-item href=/posts/>文章 </a><a class=menu-item href=/tags/>标签 </a><a class=menu-item href=/categories/>分类 </a><a class=menu-item href=/books>书单 </a><a class=menu-item href=/leetcode>LeetCode </a><a class=menu-item href=/about>关于 </a><span class="menu-item delimiter"></span><span class="menu-item search" id=search-desktop><input type=text placeholder=搜索文章标题或内容... id=search-input-desktop>
+<a href=javascript:void(0); class="search-button search-toggle" id=search-toggle-desktop title=搜索><i class="fas fa-search fa-fw"></i></a><a href=javascript:void(0); class="search-button search-clear" id=search-clear-desktop title=清空><i class="fas fa-times-circle fa-fw"></i></a><span class="search-button search-loading" id=search-loading-desktop><i class="fas fa-spinner fa-fw fa-spin"></i></span></span><a href=javascript:void(0); class="menu-item theme-switch" title=切换主题><i class="fas fa-adjust fa-fw"></i></a></div></div></div></header><header class=mobile id=header-mobile><div class=header-container><div class=header-wrapper><div class=header-title><a href=/ title="Jesse's Blog"><img class="lazyload logo" src=/svg/loading.min.svg data-src=/favicon.svg data-srcset="/favicon.svg, /favicon.svg 1.5x, /favicon.svg 2x" data-sizes=auto alt=/favicon.svg title=/favicon.svg>Jesse's Blog</a></div><div class=menu-toggle id=menu-toggle-mobile><span></span><span></span><span></span></div></div><div class=menu id=menu-mobile><div class=search-wrapper><div class="search mobile" id=search-mobile><input type=text placeholder=搜索文章标题或内容... id=search-input-mobile>
+<a href=javascript:void(0); class="search-button search-toggle" id=search-toggle-mobile title=搜索><i class="fas fa-search fa-fw"></i></a><a href=javascript:void(0); class="search-button search-clear" id=search-clear-mobile title=清空><i class="fas fa-times-circle fa-fw"></i></a><span class="search-button search-loading" id=search-loading-mobile><i class="fas fa-spinner fa-fw fa-spin"></i></span></div><a href=javascript:void(0); class=search-cancel id=search-cancel-mobile>取消</a></div><a class=menu-item href=/posts/>文章</a><a class=menu-item href=/tags/>标签</a><a class=menu-item href=/categories/>分类</a><a class=menu-item href=/books>书单</a><a class=menu-item href=/leetcode>LeetCode</a><a class=menu-item href=/about>关于</a><a href=javascript:void(0); class="menu-item theme-switch" title=切换主题>
+<i class="fas fa-adjust fa-fw"></i></a></div></div></header><div class="search-dropdown desktop"><div id=search-dropdown-desktop></div></div><div class="search-dropdown mobile"><div id=search-dropdown-mobile></div></div><main class=main><div class=container><div class=toc id=toc-auto><h2 class=toc-title>目录</h2><div class="toc-content always-active" id=toc-content-auto></div></div><article class="page single"><h1 class="single-title animated flipInX">后缀数组及SA-IS算法笔记</h1><div class=post-meta><div class=post-meta-line><span class=post-author><a href=https://github.com/jesse996 title=Author target=_blank rel="noopener noreffer author" class=author><i class="fas fa-user-circle fa-fw"></i>Jesse</a></span>&nbsp;<span class=post-category>收录于 <a href=/categories/%E7%AE%97%E6%B3%95/><i class="far fa-folder fa-fw"></i>算法</a></span></div><div class=post-meta-line><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime=2020-08-15>2020-08-15</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;约 7831 字&nbsp;
+<i class="far fa-clock fa-fw"></i>&nbsp;预计阅读 16 分钟&nbsp;</div></div><div class="details toc" id=toc-static kept><div class="details-summary toc-title"><span>目录</span>
+<span><i class="details-icon fas fa-angle-right"></i></span></div><div class="details-content toc-content" id=toc-content-static><nav id=TableOfContents><ul><li><ul><li><a href=#定义>定义</a><ul><li><a href=#字符串>字符串</a></li><li><a href=#后缀>后缀</a></li><li><a href=#后缀数组>后缀数组</a></li></ul></li><li><a href=#一个简单的实现>一个简单的实现</a></li><li><a href=#sa-is-背景知识>SA-IS 背景知识</a><ul><li><a href=#s-type-and-l-type-suffixes>S-type and L-type suffixes</a></li><li><a href=#lms-字符>LMS 字符</a></li><li><a href=#lms-子串>LMS 子串</a></li><li><a href=#桶排序>桶排序</a></li></ul></li><li><a href=#sa-is-算法>SA-IS 算法</a><ul><li><a href=#第一个猜测>第一个猜测</a></li><li><a href=#诱导排序l-型后缀>诱导排序：L 型后缀</a></li><li><a href=#诱导排序s-型后缀>诱导排序：S 型后缀</a></li><li><a href=#总结猜测的后缀数组>总结猜测的后缀数组</a></li><li><a href=#得到总结的后缀数组>得到总结的后缀数组</a></li><li><a href=#建立真正的后缀数组>建立真正的后缀数组</a></li><li><a href=#整合在一起>整合在一起</a></li></ul></li></ul></li></ul></nav></div></div><div class=content id=content><h2 id=定义>定义</h2><h3 id=字符串>字符串</h3><p>字符串<code>s</code>连续的一段字符组成的串叫做字符串，更广义地，任何一个由可比较大小的元素组成的数组都可称为字符串。字符串的下标从<code>0</code>开始，长度为<code>length(s)</code></p><h3 id=后缀>后缀</h3><p><code>suffix(i)</code>表示字符串从<code>s</code>第<code>i</code>个位置开始的后缀，即由<code>s[i]~s[n-1]</code>组成的子串</p><h3 id=后缀数组>后缀数组</h3><p><code>sa[]</code>是一个一维数组，保存了字符串<code>s</code>的所有后缀<strong>排序后</strong>的结果</p><p><code>rank[]</code>是一个一维数组，保存了每个后缀在<code>sa[]</code>中的排名，<code>rank[i]</code>表示<code>suffix(i)</code>的排名，即<code>rank[sa[i]]=i</code></p><p><code>height[]</code>是一个一维数组，保存了相邻两个后缀的最长公共前缀（Longest Common Prefix,lcp）的长度</p><h2 id=一个简单的实现>一个简单的实现</h2><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-java data-lang=java><span class=kd>public</span> <span class=n>String</span> <span class=nf>longestDupSubstring</span><span class=o>(</span><span class=n>String</span> <span class=n>S</span><span class=o>)</span> <span class=o>{</span>
+    <span class=kt>int</span> <span class=n>n</span><span class=o>=</span><span class=n>S</span><span class=o>.</span><span class=na>length</span><span class=o>();</span>
+    <span class=n>String</span><span class=o>[]</span> <span class=n>sa</span><span class=o>=</span><span class=k>new</span> <span class=n>String</span><span class=o>[</span><span class=n>n</span><span class=o>];</span>
+    <span class=k>for</span> <span class=o>(</span><span class=kt>int</span> <span class=n>i</span><span class=o>=</span><span class=n>0</span><span class=o>;</span><span class=n>i</span><span class=o>&lt;</span><span class=n>n</span><span class=o>;</span><span class=n>i</span><span class=o>++){</span>
+        <span class=n>sa</span><span class=o>[</span><span class=n>i</span><span class=o>]=</span><span class=n>S</span><span class=o>.</span><span class=na>substring</span><span class=o>(</span><span class=n>i</span><span class=o>);</span>
+    <span class=o>}</span>
+    <span class=n>Arrays</span><span class=o>.</span><span class=na>sort</span><span class=o>(</span><span class=n>sa</span><span class=o>);</span>
+    <span class=n>String</span> <span class=n>max</span><span class=o>=</span><span class=s>&#34;&#34;</span><span class=o>;</span>
+    <span class=k>for</span> <span class=o>(</span><span class=kt>int</span> <span class=n>i</span><span class=o>=</span><span class=n>1</span><span class=o>;</span><span class=n>i</span><span class=o>&lt;</span><span class=n>n</span><span class=o>;</span><span class=n>i</span><span class=o>++){</span>
+        <span class=kt>int</span> <span class=n>len</span><span class=o>=</span><span class=n>lcp</span><span class=o>(</span><span class=n>sa</span><span class=o>[</span><span class=n>i</span><span class=o>-</span><span class=n>1</span><span class=o>],</span><span class=n>sa</span><span class=o>[</span><span class=n>i</span><span class=o>]);</span>
+        <span class=k>if</span> <span class=o>(</span><span class=n>len</span><span class=o>&gt;</span><span class=n>max</span><span class=o>.</span><span class=na>length</span><span class=o>())</span> <span class=n>max</span><span class=o>=</span><span class=n>sa</span><span class=o>[</span><span class=n>i</span><span class=o>].</span><span class=na>substring</span><span class=o>(</span><span class=n>0</span><span class=o>,</span><span class=n>len</span><span class=o>);</span>
+    <span class=o>}</span>
+    <span class=k>return</span> <span class=n>max</span><span class=o>;</span>
+<span class=o>}</span>
+<span class=kd>static</span> <span class=kt>int</span> <span class=nf>lcp</span><span class=o>(</span><span class=n>String</span> <span class=n>a</span><span class=o>,</span><span class=n>String</span> <span class=n>b</span><span class=o>){</span>
+    <span class=kt>int</span> <span class=n>n</span> <span class=o>=</span><span class=n>Math</span><span class=o>.</span><span class=na>min</span><span class=o>(</span><span class=n>a</span><span class=o>.</span><span class=na>length</span><span class=o>(),</span><span class=n>b</span><span class=o>.</span><span class=na>length</span><span class=o>());</span>
+    <span class=k>for</span> <span class=o>(</span><span class=kt>int</span> <span class=n>i</span><span class=o>=</span><span class=n>0</span><span class=o>;</span><span class=n>i</span><span class=o>&lt;</span><span class=n>n</span><span class=o>;</span><span class=n>i</span><span class=o>++){</span>
+        <span class=k>if</span> <span class=o>(</span><span class=n>a</span><span class=o>.</span><span class=na>charAt</span><span class=o>(</span><span class=n>i</span><span class=o>)!=</span><span class=n>b</span><span class=o>.</span><span class=na>charAt</span><span class=o>(</span><span class=n>i</span><span class=o>))</span> <span class=k>return</span> <span class=n>i</span><span class=o>;</span>
+    <span class=o>}</span>
+    <span class=k>return</span> <span class=n>n</span><span class=o>;</span>
+<span class=o>}</span>
+</code></pre></td></tr></table></div></div><p>这个对后缀数组的排序是用的标准库的排序方法，时间复杂度是<code>O(nlogn)</code>，而 SA-IS 的时间复杂度是<code>O(n)</code></p><h2 id=sa-is-背景知识>SA-IS 背景知识</h2><p>在进入 SA-IS 算法的细节之前，我们需要先介绍一下 SA-IS 所建立的概念。</p><h3 id=s-type-and-l-type-suffixes>S-type and L-type suffixes</h3><p>当排序一些字符串的后缀数组时，SA-IS 把他们分为“S 型”和“L 型”两种。S 型后缀是指那些比他们右边的后缀更小的那些后缀（所以在最终的排好序的后缀数组中靠前）。L 型就相反。</p><p>比如<code>cabbage</code>，offset 为 1 的后缀是<code>abbage</code>，它右边的后缀是<code>bbage</code>，可见<code>abbage</code>是比<code>bbage</code>小的，所以<code>abbage</code>是一个 S 型后缀。同理，<code>ge</code>是一个 L 型后缀（g>e）。</p><p>规定最右边是一个空的（用<code>#</code>来表示），且它是 S 型。那么倒数第二个后缀，也就是不为空的最后一个字母是 L 型</p><p>总结如下：</p><ul><li>s[n]==&rdquo;#",type[n]=S_TYPE,type[n-1]=L_TYPE</li><li>if s[i]==s[i+1] type[i]=type[i+1]</li><li>if s[i]>s[i+1] type[i]=S_TYPE</li><li>if s[i]&lt;s[i+1] type[i]=L_TYPE</li></ul><p>比如：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>s:    &#34;cabbage&#34;
+type: &#34;LSLLSLLS&#34;
+</code></pre></td></tr></table></div></div><p>记住最后的 S 型是一个空。</p><h3 id=lms-字符>LMS 字符</h3><p>就是 Left Most S 型，一串连续的 S 型中最左边的 S 型，它的左边是一个 L 型，这样的字符就是 LMS 字符</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>cabbage
+LSLLSLLS
+ ^  ^  ^      ^指向的就是LMS字符
+</code></pre></td></tr></table></div></div><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-python data-lang=python><span class=o>&gt;&gt;&gt;</span> <span class=k>def</span> <span class=nf>isLMSChar</span><span class=p>(</span><span class=n>offset</span><span class=p>,</span> <span class=n>typemap</span><span class=p>):</span>
+<span class=o>...</span>     <span class=s2>&#34;&#34;&#34;
+</span><span class=s2>...     Returns true if the character at offset is a left-most S-type.
+</span><span class=s2>...     &#34;&#34;&#34;</span>
+<span class=o>...</span>     <span class=k>if</span> <span class=n>offset</span> <span class=o>==</span> <span class=mi>0</span><span class=p>:</span>
+<span class=o>...</span>         <span class=k>return</span> <span class=bp>False</span>
+<span class=o>...</span>     <span class=k>if</span> <span class=n>typemap</span><span class=p>[</span><span class=n>offset</span><span class=p>]</span> <span class=o>==</span> <span class=n>S_TYPE</span> <span class=ow>and</span> <span class=n>typemap</span><span class=p>[</span><span class=n>offset</span> <span class=o>-</span> <span class=mi>1</span><span class=p>]</span> <span class=o>==</span> <span class=n>L_TYPE</span><span class=p>:</span>
+<span class=o>...</span>         <span class=k>return</span> <span class=bp>True</span>
+<span class=o>...</span>
+<span class=o>...</span>     <span class=k>return</span> <span class=bp>False</span>
+</code></pre></td></tr></table></div></div><h3 id=lms-子串>LMS 子串</h3><p>LMS 子串就是从一个 LMS 字符开始到下一个 LMS 字符（不包括下一个 LMS 字符）的字符串，上面的<code>cabbage</code>的 LMS 子串就是<code>abb</code>和<code>age</code>。 SA-IS 算法的神奇之处在于对 LMS 子串进行排序，但我们不能使用普通的字符串比较函数，因为我们不一定知道每个 LMS 字符串有多长。我们需要沿着字符串走，才能找到下一个 LMS 字符的开头，我们反正要遍历字符串，不如同时进行比较。</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-python data-lang=python><span class=o>&gt;&gt;&gt;</span> <span class=k>def</span> <span class=nf>lmsSubstringsAreEqual</span><span class=p>(</span><span class=n>string</span><span class=p>,</span> <span class=n>typemap</span><span class=p>,</span> <span class=n>offsetA</span><span class=p>,</span> <span class=n>offsetB</span><span class=p>):</span>
+<span class=o>...</span>     <span class=s2>&#34;&#34;&#34;
+</span><span class=s2>...     Return True if LMS substrings at offsetA and offsetB are equal.
+</span><span class=s2>...     &#34;&#34;&#34;</span>
+<span class=o>...</span>     <span class=c1># No other substring is equal to the empty suffix.</span>
+<span class=o>...</span>     <span class=k>if</span> <span class=n>offsetA</span> <span class=o>==</span> <span class=nb>len</span><span class=p>(</span><span class=n>string</span><span class=p>)</span> <span class=ow>or</span> <span class=n>offsetB</span> <span class=o>==</span> <span class=nb>len</span><span class=p>(</span><span class=n>string</span><span class=p>):</span>
+<span class=o>...</span>         <span class=k>return</span> <span class=bp>False</span>
+<span class=o>...</span>
+<span class=o>...</span>     <span class=n>i</span> <span class=o>=</span> <span class=mi>0</span>
+<span class=o>...</span>     <span class=k>while</span> <span class=bp>True</span><span class=p>:</span>
+<span class=o>...</span>         <span class=n>aIsLMS</span> <span class=o>=</span> <span class=n>isLMSChar</span><span class=p>(</span><span class=n>i</span> <span class=o>+</span> <span class=n>offsetA</span><span class=p>,</span> <span class=n>typemap</span><span class=p>)</span>
+<span class=o>...</span>         <span class=n>bIsLMS</span> <span class=o>=</span> <span class=n>isLMSChar</span><span class=p>(</span><span class=n>i</span> <span class=o>+</span> <span class=n>offsetB</span><span class=p>,</span> <span class=n>typemap</span><span class=p>)</span>
+<span class=o>...</span>
+<span class=o>...</span>         <span class=c1># If we&#39;ve found the start of the next LMS substrings...</span>
+<span class=o>...</span>         <span class=k>if</span> <span class=p>(</span><span class=n>i</span> <span class=o>&gt;</span> <span class=mi>0</span> <span class=ow>and</span> <span class=n>aIsLMS</span> <span class=ow>and</span> <span class=n>bIsLMS</span><span class=p>):</span>
+<span class=o>...</span>             <span class=c1># ...then we made it all the way through our original LMS</span>
+<span class=o>...</span>             <span class=c1># substrings without finding a difference, so we can go</span>
+<span class=o>...</span>             <span class=c1># home now.</span>
+<span class=o>...</span>             <span class=k>return</span> <span class=bp>True</span>
+<span class=o>...</span>
+<span class=o>...</span>         <span class=k>if</span> <span class=n>aIsLMS</span> <span class=o>!=</span> <span class=n>bIsLMS</span><span class=p>:</span>
+<span class=o>...</span>             <span class=c1># We found the end of one LMS substring before we reached</span>
+<span class=o>...</span>             <span class=c1># the end of the other.</span>
+<span class=o>...</span>             <span class=k>return</span> <span class=bp>False</span>
+<span class=o>...</span>
+<span class=o>...</span>         <span class=k>if</span> <span class=n>string</span><span class=p>[</span><span class=n>i</span> <span class=o>+</span> <span class=n>offsetA</span><span class=p>]</span> <span class=o>!=</span> <span class=n>string</span><span class=p>[</span><span class=n>i</span> <span class=o>+</span> <span class=n>offsetB</span><span class=p>]:</span>
+<span class=o>...</span>             <span class=c1># We found a character difference, we&#39;re done.</span>
+<span class=o>...</span>             <span class=k>return</span> <span class=bp>False</span>
+<span class=o>...</span>
+<span class=o>...</span>         <span class=n>i</span> <span class=o>+=</span> <span class=mi>1</span>
+</code></pre></td></tr></table></div></div><h3 id=桶排序>桶排序</h3><p>因为我要要对后缀数组排序，所以所有以相同字符开头的后缀都会挨着。比如<code>cabbage</code>，有 2 个 a 开头的后缀，2 个 b 开头的后缀，1 个 c 开头的后缀，所以我们可以预测排好序的数组前两个是 a 开头的后缀，然后是 2 个 b 开头的，再是 1 个 c 开头的。</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-python data-lang=python><span class=o>&gt;&gt;&gt;</span> <span class=k>def</span> <span class=nf>findBucketSizes</span><span class=p>(</span><span class=n>string</span><span class=p>,</span> <span class=n>alphabetSize</span><span class=o>=</span><span class=mi>256</span><span class=p>):</span>
+<span class=o>...</span>     <span class=n>res</span> <span class=o>=</span> <span class=p>[</span><span class=mi>0</span><span class=p>]</span> <span class=o>*</span> <span class=n>alphabetSize</span>
+<span class=o>...</span>
+<span class=o>...</span>     <span class=k>for</span> <span class=n>char</span> <span class=ow>in</span> <span class=n>string</span><span class=p>:</span>
+<span class=o>...</span>         <span class=n>res</span><span class=p>[</span><span class=n>char</span><span class=p>]</span> <span class=o>+=</span> <span class=mi>1</span>
+<span class=o>...</span>
+<span class=o>...</span>     <span class=k>return</span> <span class=n>res</span>
+
+    <span class=c1>#a = 0, b = 1, c = 2...</span>
+<span class=o>&gt;&gt;&gt;</span> <span class=n>encoded_cabbage</span> <span class=o>=</span> <span class=p>[</span><span class=mi>2</span><span class=p>,</span> <span class=mi>0</span><span class=p>,</span> <span class=mi>1</span><span class=p>,</span> <span class=mi>1</span><span class=p>,</span> <span class=mi>0</span><span class=p>,</span> <span class=mi>6</span><span class=p>,</span> <span class=mi>4</span><span class=p>]</span><span class=c1>#cabbage</span>
+<span class=o>&gt;&gt;&gt;</span> <span class=n>findBucketSizes</span><span class=p>(</span><span class=n>encoded_cabbage</span><span class=p>,</span> <span class=mi>7</span><span class=p>)</span>
+<span class=p>[</span><span class=mi>2</span><span class=p>,</span> <span class=mi>2</span><span class=p>,</span> <span class=mi>1</span><span class=p>,</span> <span class=mi>0</span><span class=p>,</span> <span class=mi>1</span><span class=p>,</span> <span class=mi>0</span><span class=p>,</span> <span class=mi>1</span><span class=p>]</span>
+</code></pre></td></tr></table></div></div><p>现在我们知道了每个 bucket 有多大，就可以简单地推导出一个数组，其中每个字符的索引都指向后缀数组中相应 bucket 的开头。</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-python data-lang=python><span class=o>&gt;&gt;&gt;</span> <span class=k>def</span> <span class=nf>findBucketHeads</span><span class=p>(</span><span class=n>bucketSizes</span><span class=p>):</span>
+<span class=o>...</span>     <span class=n>offset</span> <span class=o>=</span> <span class=mi>1</span>
+<span class=o>...</span>     <span class=n>res</span> <span class=o>=</span> <span class=p>[]</span>
+<span class=o>...</span>     <span class=k>for</span> <span class=n>size</span> <span class=ow>in</span> <span class=n>bucketSizes</span><span class=p>:</span>
+<span class=o>...</span>         <span class=n>res</span><span class=o>.</span><span class=n>append</span><span class=p>(</span><span class=n>offset</span><span class=p>)</span>
+<span class=o>...</span>         <span class=n>offset</span> <span class=o>+=</span> <span class=n>size</span>
+<span class=o>...</span>
+<span class=o>...</span>     <span class=k>return</span> <span class=n>res</span>
+<span class=o>&gt;&gt;&gt;</span> <span class=n>cabbage_buckets</span> <span class=o>=</span> <span class=n>findBucketSizes</span><span class=p>(</span><span class=n>encoded_cabbage</span><span class=p>,</span> <span class=mi>7</span><span class=p>)</span>
+<span class=o>&gt;&gt;&gt;</span> <span class=n>findBucketHeads</span><span class=p>(</span><span class=n>cabbage_buckets</span><span class=p>)</span>
+<span class=p>[</span><span class=mi>1</span><span class=p>,</span> <span class=mi>3</span><span class=p>,</span> <span class=mi>5</span><span class=p>,</span> <span class=mi>6</span><span class=p>,</span> <span class=mi>6</span><span class=p>,</span> <span class=mi>7</span><span class=p>,</span> <span class=mi>7</span><span class=p>]</span>
+</code></pre></td></tr></table></div></div><p>最后的空后缀总是在排好的后缀数组的第 0 位，所以 bucket 从 1 开始。有 2 个 a 开头的后缀所以 b 桶从 3 开始，以此类推。注意 d 桶和 e 桶都从 6 开始，但因为没有 d 开头的后缀，所以不会有问题。<br>同门可以用相似的方法找到桶尾。</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-python data-lang=python><span class=o>&gt;&gt;&gt;</span> <span class=k>def</span> <span class=nf>findBucketTails</span><span class=p>(</span><span class=n>bucketSizes</span><span class=p>):</span>
+<span class=o>...</span>     <span class=n>offset</span> <span class=o>=</span> <span class=mi>1</span>
+<span class=o>...</span>     <span class=n>res</span> <span class=o>=</span> <span class=p>[]</span>
+<span class=o>...</span>     <span class=k>for</span> <span class=n>size</span> <span class=ow>in</span> <span class=n>bucketSizes</span><span class=p>:</span>
+<span class=o>...</span>         <span class=n>offset</span> <span class=o>+=</span> <span class=n>size</span>
+<span class=o>...</span>         <span class=n>res</span><span class=o>.</span><span class=n>append</span><span class=p>(</span><span class=n>offset</span> <span class=o>-</span> <span class=mi>1</span><span class=p>)</span>
+<span class=o>...</span>
+<span class=o>...</span>     <span class=k>return</span> <span class=n>res</span>
+<span class=o>&gt;&gt;&gt;</span> <span class=n>findBucketTails</span><span class=p>(</span><span class=n>cabbage_buckets</span><span class=p>)</span>
+<span class=p>[</span><span class=mi>2</span><span class=p>,</span> <span class=mi>4</span><span class=p>,</span> <span class=mi>5</span><span class=p>,</span> <span class=mi>5</span><span class=p>,</span> <span class=mi>6</span><span class=p>,</span> <span class=mi>6</span><span class=p>,</span> <span class=mi>7</span><span class=p>]</span>
+</code></pre></td></tr></table></div></div><p>现在，讲完了所有的背景知识，我们来谈谈算法本身。</p><h2 id=sa-is-算法>SA-IS 算法</h2><p>名字由来是 <code>Suffix Array by Induced Sorting</code>。什么是
+<code>Induced Sorting</code>？建立后缀数组的棘手部分是 LMS 后缀。</p><p>先宏观看一下 SA-IS 算法</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span><span class=lnt>31
+</span><span class=lnt>32
+</span><span class=lnt>33
+</span><span class=lnt>34
+</span><span class=lnt>35
+</span><span class=lnt>36
+</span><span class=lnt>37
+</span><span class=lnt>38
+</span><span class=lnt>39
+</span><span class=lnt>40
+</span><span class=lnt>41
+</span><span class=lnt>42
+</span><span class=lnt>43
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-python data-lang=python><span class=o>&gt;&gt;&gt;</span> <span class=k>def</span> <span class=nf>makeSuffixArrayByInducedSorting</span><span class=p>(</span><span class=n>string</span><span class=p>,</span> <span class=n>alphabetSize</span><span class=p>):</span>
+<span class=o>...</span>     <span class=s2>&#34;&#34;&#34;
+</span><span class=s2>...     Compute the suffix array of &#39;string&#39; with the SA-IS algorithm.
+</span><span class=s2>...     &#34;&#34;&#34;</span>
+<span class=o>...</span>
+<span class=o>...</span>     <span class=c1># Classify each character of the string as S_TYPE or L_TYPE</span>
+<span class=o>...</span>     <span class=n>typemap</span> <span class=o>=</span> <span class=n>buildTypeMap</span><span class=p>(</span><span class=n>string</span><span class=p>)</span>
+<span class=o>...</span>
+<span class=o>...</span>     <span class=c1># We&#39;ll be slotting suffixes into buckets according to what</span>
+<span class=o>...</span>     <span class=c1># character they start with, so let&#39;s precompute that info now.</span>
+<span class=o>...</span>     <span class=n>bucketSizes</span> <span class=o>=</span> <span class=n>findBucketSizes</span><span class=p>(</span><span class=n>string</span><span class=p>,</span> <span class=n>alphabetSize</span><span class=p>)</span>
+<span class=o>...</span>
+<span class=o>...</span>     <span class=c1># Use a simple bucket-sort to insert all the LMS suffixes into</span>
+<span class=o>...</span>     <span class=c1># approximately the right place the suffix array.</span>
+<span class=o>...</span>     <span class=n>guessedSuffixArray</span> <span class=o>=</span> <span class=n>guessLMSSort</span><span class=p>(</span><span class=n>string</span><span class=p>,</span> <span class=n>bucketSizes</span><span class=p>,</span> <span class=n>typemap</span><span class=p>)</span>
+<span class=o>...</span>
+<span class=o>...</span>     <span class=c1># Slot all the other suffixes into guessedSuffixArray, by using</span>
+<span class=o>...</span>     <span class=c1># induced sorting. This may move the LMS suffixes around.</span>
+<span class=o>...</span>     <span class=n>induceSortL</span><span class=p>(</span><span class=n>string</span><span class=p>,</span> <span class=n>guessedSuffixArray</span><span class=p>,</span> <span class=n>bucketSizes</span><span class=p>,</span> <span class=n>typemap</span><span class=p>)</span>
+<span class=o>...</span>     <span class=n>induceSortS</span><span class=p>(</span><span class=n>string</span><span class=p>,</span> <span class=n>guessedSuffixArray</span><span class=p>,</span> <span class=n>bucketSizes</span><span class=p>,</span> <span class=n>typemap</span><span class=p>)</span>
+<span class=o>...</span>
+<span class=o>...</span>     <span class=c1># Create a new string that summarises the relative order of LMS</span>
+<span class=o>...</span>     <span class=c1># suffixes in the guessed suffix array.</span>
+<span class=o>...</span>     <span class=n>summaryString</span><span class=p>,</span> <span class=n>summaryAlphabetSize</span><span class=p>,</span> <span class=n>summarySuffixOffsets</span> <span class=o>=</span> \
+<span class=o>...</span>         <span class=n>summariseSuffixArray</span><span class=p>(</span><span class=n>string</span><span class=p>,</span> <span class=n>guessedSuffixArray</span><span class=p>,</span> <span class=n>typemap</span><span class=p>)</span>
+<span class=o>...</span>
+<span class=o>...</span>     <span class=c1># Make a sorted suffix array of the summary string.</span>
+<span class=o>...</span>     <span class=n>summarySuffixArray</span> <span class=o>=</span> <span class=n>makeSummarySuffixArray</span><span class=p>(</span>
+<span class=o>...</span>         <span class=n>summaryString</span><span class=p>,</span>
+<span class=o>...</span>         <span class=n>summaryAlphabetSize</span><span class=p>,</span>
+<span class=o>...</span>     <span class=p>)</span>
+<span class=o>...</span>
+<span class=o>...</span>     <span class=c1># Using the suffix array of the summary string, determine exactly</span>
+<span class=o>...</span>     <span class=c1># where the LMS suffixes should go in our final array.</span>
+<span class=o>...</span>     <span class=n>result</span> <span class=o>=</span> <span class=n>accurateLMSSort</span><span class=p>(</span><span class=n>string</span><span class=p>,</span> <span class=n>bucketSizes</span><span class=p>,</span> <span class=n>typemap</span><span class=p>,</span>
+<span class=o>...</span>             <span class=n>summarySuffixArray</span><span class=p>,</span> <span class=n>summarySuffixOffsets</span><span class=p>)</span>
+<span class=o>...</span>
+<span class=o>...</span>     <span class=c1># ...and once again, slot all the other suffixes into place with</span>
+<span class=o>...</span>     <span class=c1># induced sorting.</span>
+<span class=o>...</span>     <span class=n>induceSortL</span><span class=p>(</span><span class=n>string</span><span class=p>,</span> <span class=n>result</span><span class=p>,</span> <span class=n>bucketSizes</span><span class=p>,</span> <span class=n>typemap</span><span class=p>)</span>
+<span class=o>...</span>     <span class=n>induceSortS</span><span class=p>(</span><span class=n>string</span><span class=p>,</span> <span class=n>result</span><span class=p>,</span> <span class=n>bucketSizes</span><span class=p>,</span> <span class=n>typemap</span><span class=p>)</span>
+<span class=o>...</span>
+<span class=o>...</span>     <span class=k>return</span> <span class=n>result</span>
+</code></pre></td></tr></table></div></div><p>为了帮助说明算法的运行情况，我们将使用以下函数来显示正在进行中的后缀数组的状态。我们将在未初始化的后缀数组元素中存储-1，由于我们将在短字符串上演示该算法，我们可以假设每个偏移量将是一到两位数的长度（与&rdquo;-1 &ldquo;的长度相同），并像这样呈现后缀数组的中间状态。</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-python data-lang=python><span class=o>&gt;&gt;&gt;</span> <span class=k>def</span> <span class=nf>showSuffixArray</span><span class=p>(</span><span class=n>arr</span><span class=p>,</span> <span class=n>pos</span><span class=o>=</span><span class=bp>None</span><span class=p>):</span>
+<span class=o>...</span>     <span class=k>print</span><span class=p>(</span><span class=s2>&#34; &#34;</span><span class=o>.</span><span class=n>join</span><span class=p>(</span><span class=s2>&#34;</span><span class=si>%02d</span><span class=s2>&#34;</span> <span class=o>%</span> <span class=n>each</span> <span class=k>for</span> <span class=n>each</span> <span class=ow>in</span> <span class=n>arr</span><span class=p>))</span>
+<span class=o>...</span>
+<span class=o>...</span>     <span class=k>if</span> <span class=n>pos</span> <span class=ow>is</span> <span class=ow>not</span> <span class=bp>None</span><span class=p>:</span>
+<span class=o>...</span>         <span class=k>print</span><span class=p>(</span><span class=s2>&#34; &#34;</span><span class=o>.</span><span class=n>join</span><span class=p>(</span>
+<span class=o>...</span>                 <span class=s2>&#34;^^&#34;</span> <span class=k>if</span> <span class=n>each</span> <span class=o>==</span> <span class=n>pos</span> <span class=k>else</span> <span class=s2>&#34;  &#34;</span>
+<span class=o>...</span>                 <span class=k>for</span> <span class=n>each</span> <span class=ow>in</span> <span class=nb>range</span><span class=p>(</span><span class=nb>len</span><span class=p>(</span><span class=n>arr</span><span class=p>))</span>
+<span class=o>...</span>         <span class=p>))</span>
+
+<span class=o>&gt;&gt;&gt;</span> <span class=n>showSuffixArray</span><span class=p>([</span><span class=mi>2</span><span class=p>,</span> <span class=o>-</span><span class=mi>1</span><span class=p>,</span> <span class=mi>4</span><span class=p>])</span>
+<span class=mo>02</span> <span class=o>-</span><span class=mi>1</span> <span class=mo>04</span>
+
+<span class=o>&gt;&gt;&gt;</span> <span class=n>showSuffixArray</span><span class=p>([</span><span class=mi>2</span><span class=p>,</span> <span class=o>-</span><span class=mi>1</span><span class=p>,</span> <span class=mi>4</span><span class=p>],</span> <span class=mi>2</span><span class=p>)</span>
+<span class=mo>02</span> <span class=o>-</span><span class=mi>1</span> <span class=mo>04</span>
+      <span class=o>^^</span>
+</code></pre></td></tr></table></div></div><h3 id=第一个猜测>第一个猜测</h3><p>我们还不知道我们的 LMS 后缀在 sfffix 数组中的确切位置，所以我们先用桶排序把它们放在大约正确的位置。在其他条件相同的情况下，较长的后缀（字符串中较早出现的后缀）排在较短的后缀（较晚出现的后缀）之后，所以我们将从左到右遍历字符串，并将我们找到的每个 LMS 后缀堆放在其桶的尾部。</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span><span class=lnt>31
+</span><span class=lnt>32
+</span><span class=lnt>33
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-python data-lang=python><span class=o>&gt;&gt;&gt;</span> <span class=k>def</span> <span class=nf>guessLMSSort</span><span class=p>(</span><span class=n>string</span><span class=p>,</span> <span class=n>bucketSizes</span><span class=p>,</span> <span class=n>typemap</span><span class=p>):</span>
+<span class=o>...</span>     <span class=s2>&#34;&#34;&#34;
+</span><span class=s2>...     Make a suffix array with LMS-substrings approximately right.
+</span><span class=s2>...     &#34;&#34;&#34;</span>
+<span class=o>...</span>     <span class=c1># Create a suffix array with room for a pointer to every suffix of</span>
+<span class=o>...</span>     <span class=c1># the string, including the empty suffix at the end.</span>
+<span class=o>...</span>     <span class=n>guessedSuffixArray</span> <span class=o>=</span> <span class=p>[</span><span class=o>-</span><span class=mi>1</span><span class=p>]</span> <span class=o>*</span> <span class=p>(</span><span class=nb>len</span><span class=p>(</span><span class=n>string</span><span class=p>)</span> <span class=o>+</span> <span class=mi>1</span><span class=p>)</span>
+<span class=o>...</span>
+<span class=o>...</span>     <span class=n>bucketTails</span> <span class=o>=</span> <span class=n>findBucketTails</span><span class=p>(</span><span class=n>bucketSizes</span><span class=p>)</span>
+<span class=o>...</span>
+<span class=o>...</span>     <span class=c1># Bucket-sort all the LMS suffixes into their appropriate bucket.</span>
+<span class=o>...</span>     <span class=k>for</span> <span class=n>i</span> <span class=ow>in</span> <span class=nb>range</span><span class=p>(</span><span class=nb>len</span><span class=p>(</span><span class=n>string</span><span class=p>)):</span>
+<span class=o>...</span>         <span class=k>if</span> <span class=ow>not</span> <span class=n>isLMSChar</span><span class=p>(</span><span class=n>i</span><span class=p>,</span> <span class=n>typemap</span><span class=p>):</span>
+<span class=o>...</span>             <span class=c1># Not the start of an LMS suffix</span>
+<span class=o>...</span>             <span class=k>continue</span>
+<span class=o>...</span>
+<span class=o>...</span>         <span class=c1># Which bucket does this suffix go into?</span>
+<span class=o>...</span>         <span class=n>bucketIndex</span> <span class=o>=</span> <span class=n>string</span><span class=p>[</span><span class=n>i</span><span class=p>]</span>
+<span class=o>...</span>         <span class=c1># Add the start position at the tail of the bucket...</span>
+<span class=o>...</span>         <span class=n>guessedSuffixArray</span><span class=p>[</span><span class=n>bucketTails</span><span class=p>[</span><span class=n>bucketIndex</span><span class=p>]]</span> <span class=o>=</span> <span class=n>i</span>
+<span class=o>...</span>         <span class=c1># ...and move the tail pointer down.</span>
+<span class=o>...</span>         <span class=n>bucketTails</span><span class=p>[</span><span class=n>bucketIndex</span><span class=p>]</span> <span class=o>-=</span> <span class=mi>1</span>
+<span class=o>...</span>
+<span class=o>...</span>         <span class=c1># Show the current state of the array</span>
+<span class=o>...</span>         <span class=n>showSuffixArray</span><span class=p>(</span><span class=n>guessedSuffixArray</span><span class=p>)</span>
+<span class=o>...</span>
+<span class=o>...</span>     <span class=c1># The empty suffix is defined to be an LMS-substring, and we know</span>
+<span class=o>...</span>     <span class=c1># it goes at the front.</span>
+<span class=o>...</span>     <span class=n>guessedSuffixArray</span><span class=p>[</span><span class=mi>0</span><span class=p>]</span> <span class=o>=</span> <span class=nb>len</span><span class=p>(</span><span class=n>string</span><span class=p>)</span>
+<span class=o>...</span>
+<span class=o>...</span>     <span class=n>showSuffixArray</span><span class=p>(</span><span class=n>guessedSuffixArray</span><span class=p>)</span>
+<span class=o>...</span>
+<span class=o>...</span>     <span class=k>return</span> <span class=n>guessedSuffixArray</span>
+</code></pre></td></tr></table></div></div><p>因此，现在我们可以猜测 LMS 子串在我们的字符串中的位置，将所有其他位置设置为-1。</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-python data-lang=python><span class=o>&gt;&gt;&gt;</span> <span class=n>cabbage_buckets</span> <span class=o>=</span> <span class=n>findBucketSizes</span><span class=p>(</span><span class=sa>b</span><span class=s1>&#39;cabbage&#39;</span><span class=p>)</span>
+<span class=o>&gt;&gt;&gt;</span> <span class=n>cabbage_types</span> <span class=o>=</span> <span class=n>buildTypeMap</span><span class=p>(</span><span class=sa>b</span><span class=s1>&#39;cabbage&#39;</span><span class=p>)</span>
+<span class=o>&gt;&gt;&gt;</span> <span class=n>cabbage_guess</span> <span class=o>=</span> <span class=n>guessLMSSort</span><span class=p>(</span><span class=sa>b</span><span class=s1>&#39;cabbage&#39;</span><span class=p>,</span> <span class=n>cabbage_buckets</span><span class=p>,</span> <span class=n>cabbage_types</span><span class=p>)</span>
+<span class=o>-</span><span class=mi>1</span> <span class=o>-</span><span class=mi>1</span> <span class=mo>01</span> <span class=o>-</span><span class=mi>1</span> <span class=o>-</span><span class=mi>1</span> <span class=o>-</span><span class=mi>1</span> <span class=o>-</span><span class=mi>1</span> <span class=o>-</span><span class=mi>1</span>
+<span class=o>-</span><span class=mi>1</span> <span class=mo>04</span> <span class=mo>01</span> <span class=o>-</span><span class=mi>1</span> <span class=o>-</span><span class=mi>1</span> <span class=o>-</span><span class=mi>1</span> <span class=o>-</span><span class=mi>1</span> <span class=o>-</span><span class=mi>1</span>
+<span class=mo>07</span> <span class=mo>04</span> <span class=mo>01</span> <span class=o>-</span><span class=mi>1</span> <span class=o>-</span><span class=mi>1</span> <span class=o>-</span><span class=mi>1</span> <span class=o>-</span><span class=mi>1</span> <span class=o>-</span><span class=mi>1</span>
+</code></pre></td></tr></table></div></div><ul><li>它找到的第一个 LMS 后缀是 abbage，在字符串的索引 1 处，所以它把它放在 a 桶的末尾。</li><li>它找到的下一个 LMS 后缀是 index 4 的 age，所以它把它放在 abbage 之前</li><li>我们到了源字符串的结尾，所以我们在后缀数组的 0 位置添加了空后缀。</li></ul><p>为了填补剩下的位置，我们将使用 &ldquo;诱导排序&rdquo;；也就是根据数组中已有的内容来确定其他后缀的位置。</p><h3 id=诱导排序l-型后缀>诱导排序：L 型后缀</h3><p>现在我们的后缀数组中已经有了 LMS 后缀，我们可以推断出所有其他后缀的去向。我们首先扫描我们的临时后缀数组，对于每一个列出的后缀，我们检查原始字符串中它左边的后缀&ndash;如果那是 L 型，我们也会对它进行桶式排序。</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span><span class=lnt>31
+</span><span class=lnt>32
+</span><span class=lnt>33
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-python data-lang=python><span class=o>&gt;&gt;&gt;</span> <span class=k>def</span> <span class=nf>induceSortL</span><span class=p>(</span><span class=n>string</span><span class=p>,</span> <span class=n>guessedSuffixArray</span><span class=p>,</span> <span class=n>bucketSizes</span><span class=p>,</span> <span class=n>typemap</span><span class=p>):</span>
+<span class=o>...</span>     <span class=s2>&#34;&#34;&#34;
+</span><span class=s2>...     Slot L-type suffixes into place.
+</span><span class=s2>...     &#34;&#34;&#34;</span>
+<span class=o>...</span>     <span class=n>bucketHeads</span> <span class=o>=</span> <span class=n>findBucketHeads</span><span class=p>(</span><span class=n>bucketSizes</span><span class=p>)</span>
+<span class=o>...</span>
+<span class=o>...</span>     <span class=c1># For each cell in the suffix array....</span>
+<span class=o>...</span>     <span class=k>for</span> <span class=n>i</span> <span class=ow>in</span> <span class=nb>range</span><span class=p>(</span><span class=nb>len</span><span class=p>(</span><span class=n>guessedSuffixArray</span><span class=p>)):</span>
+<span class=o>...</span>         <span class=k>if</span> <span class=n>guessedSuffixArray</span><span class=p>[</span><span class=n>i</span><span class=p>]</span> <span class=o>==</span> <span class=o>-</span><span class=mi>1</span><span class=p>:</span>
+<span class=o>...</span>             <span class=c1># No offset is recorded here.</span>
+<span class=o>...</span>             <span class=k>continue</span>
+<span class=o>...</span>
+<span class=o>...</span>         <span class=c1># We&#39;re interested in the suffix that begins to the left of</span>
+<span class=o>...</span>         <span class=c1># the suffix this entry points at.</span>
+<span class=o>...</span>         <span class=n>j</span> <span class=o>=</span> <span class=n>guessedSuffixArray</span><span class=p>[</span><span class=n>i</span><span class=p>]</span> <span class=o>-</span> <span class=mi>1</span>
+<span class=o>...</span>         <span class=k>if</span> <span class=n>j</span> <span class=o>&lt;</span> <span class=mi>0</span><span class=p>:</span>
+<span class=o>...</span>             <span class=c1># This entry in the suffix array is the suffix that begins</span>
+<span class=o>...</span>             <span class=c1># at the start of the string, offset 0. Therefore there is</span>
+<span class=o>...</span>             <span class=c1># no suffix to the left of it, and j is out of bounds of</span>
+<span class=o>...</span>             <span class=c1># the typemap.</span>
+<span class=o>...</span>             <span class=k>continue</span>
+<span class=o>...</span>         <span class=k>if</span> <span class=n>typemap</span><span class=p>[</span><span class=n>j</span><span class=p>]</span> <span class=o>!=</span> <span class=n>L_TYPE</span><span class=p>:</span>
+<span class=o>...</span>             <span class=c1># We&#39;re only interested in L-type suffixes right now.</span>
+<span class=o>...</span>             <span class=k>continue</span>
+<span class=o>...</span>
+<span class=o>...</span>         <span class=c1># Which bucket does this suffix go into?</span>
+<span class=o>...</span>         <span class=n>bucketIndex</span> <span class=o>=</span> <span class=n>string</span><span class=p>[</span><span class=n>j</span><span class=p>]</span>
+<span class=o>...</span>         <span class=c1># Add the start position at the head of the bucket...</span>
+<span class=o>...</span>         <span class=n>guessedSuffixArray</span><span class=p>[</span><span class=n>bucketHeads</span><span class=p>[</span><span class=n>bucketIndex</span><span class=p>]]</span> <span class=o>=</span> <span class=n>j</span>
+<span class=o>...</span>         <span class=c1># ...and move the head pointer up.</span>
+<span class=o>...</span>         <span class=n>bucketHeads</span><span class=p>[</span><span class=n>bucketIndex</span><span class=p>]</span> <span class=o>+=</span> <span class=mi>1</span>
+<span class=o>...</span>
+<span class=o>...</span>         <span class=n>showSuffixArray</span><span class=p>(</span><span class=n>guessedSuffixArray</span><span class=p>,</span> <span class=n>i</span><span class=p>)</span>
+</code></pre></td></tr></table></div></div><p>如果我们将之前的猜测反馈给这个函数，就可以看着它将 L 型后缀传播到数组中。</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-python data-lang=python><span class=o>&gt;&gt;&gt;</span> <span class=n>induceSortL</span><span class=p>(</span><span class=sa>b</span><span class=s1>&#39;cabbage&#39;</span><span class=p>,</span> <span class=n>cabbage_guess</span><span class=p>,</span> <span class=n>cabbage_buckets</span><span class=p>,</span> <span class=n>cabbage_types</span><span class=p>)</span>
+<span class=mo>07</span> <span class=mo>04</span> <span class=mo>01</span> <span class=o>-</span><span class=mi>1</span> <span class=o>-</span><span class=mi>1</span> <span class=o>-</span><span class=mi>1</span> <span class=mo>06</span> <span class=o>-</span><span class=mi>1</span>
+<span class=o>^^</span>
+<span class=mo>07</span> <span class=mo>04</span> <span class=mo>01</span> <span class=mo>03</span> <span class=o>-</span><span class=mi>1</span> <span class=o>-</span><span class=mi>1</span> <span class=mo>06</span> <span class=o>-</span><span class=mi>1</span>
+   <span class=o>^^</span>
+<span class=mo>07</span> <span class=mo>04</span> <span class=mo>01</span> <span class=mo>03</span> <span class=o>-</span><span class=mi>1</span> <span class=mo>00</span> <span class=mo>06</span> <span class=o>-</span><span class=mi>1</span>
+      <span class=o>^^</span>
+<span class=mo>07</span> <span class=mo>04</span> <span class=mo>01</span> <span class=mo>03</span> <span class=mo>02</span> <span class=mo>00</span> <span class=mo>06</span> <span class=o>-</span><span class=mi>1</span>
+         <span class=o>^^</span>
+<span class=mo>07</span> <span class=mo>04</span> <span class=mo>01</span> <span class=mo>03</span> <span class=mo>02</span> <span class=mo>00</span> <span class=mo>06</span> <span class=mo>05</span>
+                  <span class=o>^^</span>
+</code></pre></td></tr></table></div></div><p>根据上面的结果，我们可以知道发生了什么</p><ul><li>我们从后缀数组中的第一个开始，它代表字符串末尾的空后缀。</li><li>空后缀前的字符为 e,偏移量是 6，所以我们将 6 放入 e 桶中。</li><li>下一个单元格的后缀 age 在偏移量为 4，它左边的后缀是偏移量为 3 的 L 型后缀 bage，所以我们将 3 放入 b 桶中。</li><li>接下来是偏移量 1 的 abbage，左边是偏移量 为 0 的 L 型后缀 cabbage，所以我们把 0 槽入 c 桶中</li><li>我们在偏移量 3 处找到了两步前存储的 bage&ndash;但偏移量 2 处的后缀(bbage)仍然是 L 型的，所以我们将它放入 b 桶中。</li><li>我们在偏移量 2 处找到了 bbage，但它左边的后缀不是 L 型，所以我们继续前进。</li><li>我们在偏移量 0 处发现了 cabbage，但它的左边没有任何东西，所以我们继续前进。</li><li>我们在偏移量 6 处发现 e，而偏移量 5 处的后缀(ge)是 L 型的，所以我们将其放入 g 桶中</li><li>我们在第 5 关找到了 ge，但它左边的后缀不是 L 型，所以我们结束了</li></ul><h3 id=诱导排序s-型后缀>诱导排序：S 型后缀</h3><p>在 L 型后缀从左到右扫描后缀数组后，我们现在从右到左扫描 S 型后缀。这基本上是前面函数的镜像。</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span><span class=lnt>31
+</span><span class=lnt>32
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-python data-lang=python><span class=o>&gt;&gt;&gt;</span> <span class=k>def</span> <span class=nf>induceSortS</span><span class=p>(</span><span class=n>string</span><span class=p>,</span> <span class=n>guessedSuffixArray</span><span class=p>,</span> <span class=n>bucketSizes</span><span class=p>,</span> <span class=n>typemap</span><span class=p>):</span>
+<span class=o>...</span>     <span class=s2>&#34;&#34;&#34;
+</span><span class=s2>...     Slot S-type suffixes into place.
+</span><span class=s2>...     &#34;&#34;&#34;</span>
+<span class=o>...</span>     <span class=n>bucketTails</span> <span class=o>=</span> <span class=n>findBucketTails</span><span class=p>(</span><span class=n>bucketSizes</span><span class=p>)</span>
+<span class=o>...</span>
+<span class=o>...</span>     <span class=k>for</span> <span class=n>i</span> <span class=ow>in</span> <span class=nb>range</span><span class=p>(</span><span class=nb>len</span><span class=p>(</span><span class=n>guessedSuffixArray</span><span class=p>)</span><span class=o>-</span><span class=mi>1</span><span class=p>,</span> <span class=o>-</span><span class=mi>1</span><span class=p>,</span> <span class=o>-</span><span class=mi>1</span><span class=p>):</span>
+<span class=o>...</span>         <span class=n>j</span> <span class=o>=</span> <span class=n>guessedSuffixArray</span><span class=p>[</span><span class=n>i</span><span class=p>]</span> <span class=o>-</span> <span class=mi>1</span>
+<span class=o>...</span>         <span class=k>if</span> <span class=n>j</span> <span class=o>&lt;</span> <span class=mi>0</span><span class=p>:</span>
+<span class=o>...</span>             <span class=c1># This entry in the suffix array is the suffix that begins</span>
+<span class=o>...</span>             <span class=c1># at the start of the string, offset 0. Therefore there is</span>
+<span class=o>...</span>             <span class=c1># no suffix to the left of it, and j is out of bounds of</span>
+<span class=o>...</span>             <span class=c1># the typemap.</span>
+<span class=o>...</span>             <span class=k>continue</span>
+<span class=o>...</span>         <span class=k>if</span> <span class=n>typemap</span><span class=p>[</span><span class=n>j</span><span class=p>]</span> <span class=o>!=</span> <span class=n>S_TYPE</span><span class=p>:</span>
+<span class=o>...</span>             <span class=c1># We&#39;re only interested in S-type suffixes right now.</span>
+<span class=o>...</span>             <span class=k>continue</span>
+<span class=o>...</span>
+<span class=o>...</span>         <span class=c1># Which bucket does this suffix go into?</span>
+<span class=o>...</span>         <span class=n>bucketIndex</span> <span class=o>=</span> <span class=n>string</span><span class=p>[</span><span class=n>j</span><span class=p>]</span>
+<span class=o>...</span>         <span class=c1># Add the start position at the tail of the bucket...</span>
+<span class=o>...</span>         <span class=n>guessedSuffixArray</span><span class=p>[</span><span class=n>bucketTails</span><span class=p>[</span><span class=n>bucketIndex</span><span class=p>]]</span> <span class=o>=</span> <span class=n>j</span>
+<span class=o>...</span>         <span class=c1># ...and move the tail pointer down.</span>
+<span class=o>...</span>         <span class=n>bucketTails</span><span class=p>[</span><span class=n>bucketIndex</span><span class=p>]</span> <span class=o>-=</span> <span class=mi>1</span>
+<span class=o>...</span>
+<span class=o>...</span>         <span class=n>showSuffixArray</span><span class=p>(</span><span class=n>guessedSuffixArray</span><span class=p>,</span> <span class=n>i</span><span class=p>)</span>
+
+<span class=o>&gt;&gt;&gt;</span> <span class=n>induceSortS</span><span class=p>(</span><span class=sa>b</span><span class=s1>&#39;cabbage&#39;</span><span class=p>,</span> <span class=n>cabbage_guess</span><span class=p>,</span> <span class=n>cabbage_buckets</span><span class=p>,</span> <span class=n>cabbage_types</span><span class=p>)</span>
+<span class=mo>07</span> <span class=mo>04</span> <span class=mo>04</span> <span class=mo>03</span> <span class=mo>02</span> <span class=mo>00</span> <span class=mo>06</span> <span class=mo>05</span>
+                     <span class=o>^^</span>
+<span class=mo>07</span> <span class=mo>01</span> <span class=mo>04</span> <span class=mo>03</span> <span class=mo>02</span> <span class=mo>00</span> <span class=mo>06</span> <span class=mo>05</span>
+            <span class=o>^^</span>
+</code></pre></td></tr></table></div></div><p>cabbage 只有两个 S 型后缀，所以我们只能得到两行输出。当函数扫过后缀数组时，它最终将 LMS 后缀的顺序从 &ldquo;04 01 &ldquo;换成了 &ldquo;01 04&rdquo;，这足以将我们猜测的后缀数组转化为正确的后缀数组。不过这只是一个快乐的巧合。如果我们处理我们的另一个例子。</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-python data-lang=python><span class=o>&gt;&gt;&gt;</span> <span class=n>baa</span> <span class=o>=</span> <span class=sa>b</span><span class=s1>&#39;baabaabac&#39;</span>
+<span class=o>&gt;&gt;&gt;</span> <span class=n>showTypeMap</span><span class=p>(</span><span class=n>baa</span><span class=p>)</span>
+<span class=n>baabaabac</span>
+<span class=n>LSSLSSLSLS</span>
+ <span class=o>^</span>  <span class=o>^</span>  <span class=o>^</span> <span class=o>^</span>
+
+ <span class=o>&gt;&gt;&gt;</span> <span class=n>induceSortS</span><span class=p>(</span><span class=n>baa</span><span class=p>,</span> <span class=n>baa_guess</span><span class=p>,</span> <span class=n>baa_buckets</span><span class=p>,</span> <span class=n>baa_types</span><span class=p>)</span>
+<span class=mi>09</span> <span class=o>-</span><span class=mi>1</span> <span class=o>-</span><span class=mi>1</span> <span class=mo>07</span> <span class=mo>04</span> <span class=mo>07</span> <span class=mo>06</span> <span class=mo>03</span> <span class=mo>00</span> <span class=mi>08</span>
+                           <span class=o>^^</span>
+<span class=mi>09</span> <span class=o>-</span><span class=mi>1</span> <span class=o>-</span><span class=mi>1</span> <span class=mo>07</span> <span class=mo>02</span> <span class=mo>07</span> <span class=mo>06</span> <span class=mo>03</span> <span class=mo>00</span> <span class=mi>08</span>
+                     <span class=o>^^</span>
+<span class=mi>09</span> <span class=o>-</span><span class=mi>1</span> <span class=o>-</span><span class=mi>1</span> <span class=mo>05</span> <span class=mo>02</span> <span class=mo>07</span> <span class=mo>06</span> <span class=mo>03</span> <span class=mo>00</span> <span class=mi>08</span>
+                  <span class=o>^^</span>
+<span class=mi>09</span> <span class=o>-</span><span class=mi>1</span> <span class=mo>01</span> <span class=mo>05</span> <span class=mo>02</span> <span class=mo>07</span> <span class=mo>06</span> <span class=mo>03</span> <span class=mo>00</span> <span class=mi>08</span>
+            <span class=o>^^</span>
+<span class=mi>09</span> <span class=mo>04</span> <span class=mo>01</span> <span class=mo>05</span> <span class=mo>02</span> <span class=mo>07</span> <span class=mo>06</span> <span class=mo>03</span> <span class=mo>00</span> <span class=mi>08</span>
+         <span class=o>^^</span>
+</code></pre></td></tr></table></div></div><p>还有一些单元格需要换一换。</p><h3 id=总结猜测的后缀数组>总结猜测的后缀数组</h3><p>我们从某个字母表中的一串字符开始，我们为这串字符做了一个近似的后缀数组，现在我们将用一个新的字母表中的新字符串来总结这个近似的后缀数组，它只代表了最重要的信息：在诱导 SortL()和诱导 SortS()做了它们的事情之后，LMS 后缀的最终位置。</p><p>总结的工作原理是这样的。原始字符串中的每个 LMS 后缀都有一个根据这些后缀在猜测的后缀数组中出现的顺序得到的名字。或者说，每个 LMS 后缀开头的 LMS 子串都会得到一个名字：如果两个 LMS 后缀以相同的 LMS 子串开头，它们就会得到相同的名字。这些名称按照与原始字符串中对应后缀相同的顺序组合，形成摘要字符串。</p><p>下面是相应的实现。</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span><span class=lnt>31
+</span><span class=lnt>32
+</span><span class=lnt>33
+</span><span class=lnt>34
+</span><span class=lnt>35
+</span><span class=lnt>36
+</span><span class=lnt>37
+</span><span class=lnt>38
+</span><span class=lnt>39
+</span><span class=lnt>40
+</span><span class=lnt>41
+</span><span class=lnt>42
+</span><span class=lnt>43
+</span><span class=lnt>44
+</span><span class=lnt>45
+</span><span class=lnt>46
+</span><span class=lnt>47
+</span><span class=lnt>48
+</span><span class=lnt>49
+</span><span class=lnt>50
+</span><span class=lnt>51
+</span><span class=lnt>52
+</span><span class=lnt>53
+</span><span class=lnt>54
+</span><span class=lnt>55
+</span><span class=lnt>56
+</span><span class=lnt>57
+</span><span class=lnt>58
+</span><span class=lnt>59
+</span><span class=lnt>60
+</span><span class=lnt>61
+</span><span class=lnt>62
+</span><span class=lnt>63
+</span><span class=lnt>64
+</span><span class=lnt>65
+</span><span class=lnt>66
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-python data-lang=python><span class=o>&gt;&gt;&gt;</span> <span class=k>def</span> <span class=nf>summariseSuffixArray</span><span class=p>(</span><span class=n>string</span><span class=p>,</span> <span class=n>guessedSuffixArray</span><span class=p>,</span> <span class=n>typemap</span><span class=p>):</span>
+<span class=o>...</span>     <span class=s2>&#34;&#34;&#34;
+</span><span class=s2>...     Construct a &#39;summary string&#39; of the positions of LMS-substrings.
+</span><span class=s2>...     &#34;&#34;&#34;</span>
+<span class=o>...</span>     <span class=c1># We will use this array to store the names of LMS substrings in</span>
+<span class=o>...</span>     <span class=c1># the positions they appear in the original string.</span>
+<span class=o>...</span>     <span class=n>lmsNames</span> <span class=o>=</span> <span class=p>[</span><span class=o>-</span><span class=mi>1</span><span class=p>]</span> <span class=o>*</span> <span class=p>(</span><span class=nb>len</span><span class=p>(</span><span class=n>string</span><span class=p>)</span> <span class=o>+</span> <span class=mi>1</span><span class=p>)</span>
+<span class=o>...</span>
+<span class=o>...</span>     <span class=c1># Keep track of what names we&#39;ve allocated.</span>
+<span class=o>...</span>     <span class=n>currentName</span> <span class=o>=</span> <span class=mi>0</span>
+<span class=o>...</span>
+<span class=o>...</span>     <span class=c1># Where in the original string was the last LMS suffix we checked?</span>
+<span class=o>...</span>     <span class=n>lastLMSSuffixOffset</span> <span class=o>=</span> <span class=bp>None</span>
+<span class=o>...</span>
+<span class=o>...</span>     <span class=c1># We know that the first LMS-substring we&#39;ll see will always be</span>
+<span class=o>...</span>     <span class=c1># the one representing the empty suffix, and it will always be at</span>
+<span class=o>...</span>     <span class=c1># position 0 of suffixOffset.</span>
+<span class=o>...</span>     <span class=n>lmsNames</span><span class=p>[</span><span class=n>guessedSuffixArray</span><span class=p>[</span><span class=mi>0</span><span class=p>]]</span> <span class=o>=</span> <span class=n>currentName</span>
+<span class=o>...</span>     <span class=n>lastLMSSuffixOffset</span> <span class=o>=</span> <span class=n>guessedSuffixArray</span><span class=p>[</span><span class=mi>0</span><span class=p>]</span>
+<span class=o>...</span>
+<span class=o>...</span>     <span class=n>showSuffixArray</span><span class=p>(</span><span class=n>lmsNames</span><span class=p>)</span>
+<span class=o>...</span>
+<span class=o>...</span>     <span class=c1># For each suffix in the suffix array...</span>
+<span class=o>...</span>     <span class=k>for</span> <span class=n>i</span> <span class=ow>in</span> <span class=nb>range</span><span class=p>(</span><span class=mi>1</span><span class=p>,</span> <span class=nb>len</span><span class=p>(</span><span class=n>guessedSuffixArray</span><span class=p>)):</span>
+<span class=o>...</span>         <span class=c1># ...where does this suffix appear in the original string?</span>
+<span class=o>...</span>         <span class=n>suffixOffset</span> <span class=o>=</span> <span class=n>guessedSuffixArray</span><span class=p>[</span><span class=n>i</span><span class=p>]</span>
+<span class=o>...</span>
+<span class=o>...</span>         <span class=c1># We only care about LMS suffixes.</span>
+<span class=o>...</span>         <span class=k>if</span> <span class=ow>not</span> <span class=n>isLMSChar</span><span class=p>(</span><span class=n>suffixOffset</span><span class=p>,</span> <span class=n>typemap</span><span class=p>):</span>
+<span class=o>...</span>             <span class=k>continue</span>
+<span class=o>...</span>
+<span class=o>...</span>         <span class=c1># If this LMS suffix starts with a different LMS substring</span>
+<span class=o>...</span>         <span class=c1># from the last suffix we looked at....</span>
+<span class=o>...</span>         <span class=k>if</span> <span class=ow>not</span> <span class=n>lmsSubstringsAreEqual</span><span class=p>(</span><span class=n>string</span><span class=p>,</span> <span class=n>typemap</span><span class=p>,</span>
+<span class=o>...</span>                 <span class=n>lastLMSSuffixOffset</span><span class=p>,</span> <span class=n>suffixOffset</span><span class=p>):</span>
+<span class=o>...</span>             <span class=c1># ...then it gets a new name</span>
+<span class=o>...</span>             <span class=n>currentName</span> <span class=o>+=</span> <span class=mi>1</span>
+<span class=o>...</span>
+<span class=o>...</span>         <span class=c1># Record the last LMS suffix we looked at.</span>
+<span class=o>...</span>         <span class=n>lastLMSSuffixOffset</span> <span class=o>=</span> <span class=n>suffixOffset</span>
+<span class=o>...</span>
+<span class=o>...</span>         <span class=c1># Store the name of this LMS suffix in lmsNames, in the same</span>
+<span class=o>...</span>         <span class=c1># place this suffix occurs in the original string.</span>
+<span class=o>...</span>         <span class=n>lmsNames</span><span class=p>[</span><span class=n>suffixOffset</span><span class=p>]</span> <span class=o>=</span> <span class=n>currentName</span>
+<span class=o>...</span>         <span class=n>showSuffixArray</span><span class=p>(</span><span class=n>lmsNames</span><span class=p>)</span>
+<span class=o>...</span>
+<span class=o>...</span>     <span class=c1># Now lmsNames contains all the characters of the suffix string in</span>
+<span class=o>...</span>     <span class=c1># the correct order, but it also contains a lot of unused indexes</span>
+<span class=o>...</span>     <span class=c1># we don&#39;t care about and which we want to remove. We also take</span>
+<span class=o>...</span>     <span class=c1># this opportunity to build summarySuffixOffsets, which tells</span>
+<span class=o>...</span>     <span class=c1># us which LMS-suffix each item in the summary string represents.</span>
+<span class=o>...</span>     <span class=c1># This will be important later.</span>
+<span class=o>...</span>     <span class=n>summarySuffixOffsets</span> <span class=o>=</span> <span class=p>[]</span>
+<span class=o>...</span>     <span class=n>summaryString</span> <span class=o>=</span> <span class=p>[]</span>
+<span class=o>...</span>     <span class=k>for</span> <span class=n>index</span><span class=p>,</span> <span class=n>name</span> <span class=ow>in</span> <span class=nb>enumerate</span><span class=p>(</span><span class=n>lmsNames</span><span class=p>):</span>
+<span class=o>...</span>         <span class=k>if</span> <span class=n>name</span> <span class=o>==</span> <span class=o>-</span><span class=mi>1</span><span class=p>:</span>
+<span class=o>...</span>             <span class=k>continue</span>
+<span class=o>...</span>         <span class=n>summarySuffixOffsets</span><span class=o>.</span><span class=n>append</span><span class=p>(</span><span class=n>index</span><span class=p>)</span>
+<span class=o>...</span>         <span class=n>summaryString</span><span class=o>.</span><span class=n>append</span><span class=p>(</span><span class=n>name</span><span class=p>)</span>
+<span class=o>...</span>
+<span class=o>...</span>     <span class=c1># The alphabetically smallest character in the summary string</span>
+<span class=o>...</span>     <span class=c1># is numbered zero, so the total number of characters in our</span>
+<span class=o>...</span>     <span class=c1># alphabet is one larger than the largest numbered character.</span>
+<span class=o>...</span>     <span class=n>summaryAlphabetSize</span> <span class=o>=</span> <span class=n>currentName</span> <span class=o>+</span> <span class=mi>1</span>
+<span class=o>...</span>
+<span class=o>...</span>     <span class=k>return</span> <span class=n>summaryString</span><span class=p>,</span> <span class=n>summaryAlphabetSize</span><span class=p>,</span> <span class=n>summarySuffixOffsets</span>
+</code></pre></td></tr></table></div></div><p>上面代码很多，看一个例子</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-python data-lang=python><span class=o>&gt;&gt;&gt;</span> <span class=p>(</span>
+<span class=o>...</span>     <span class=n>cabbage_summary</span><span class=p>,</span>
+<span class=o>...</span>     <span class=n>cabbage_summary_alpha_size</span><span class=p>,</span>
+<span class=o>...</span>     <span class=n>cabbage_summary_suffix_offsets</span><span class=p>,</span>
+<span class=o>...</span> <span class=p>)</span> <span class=o>=</span> <span class=n>summariseSuffixArray</span><span class=p>(</span><span class=sa>b</span><span class=s1>&#39;cabbage&#39;</span><span class=p>,</span> <span class=n>cabbage_guess</span><span class=p>,</span> <span class=n>cabbage_types</span><span class=p>)</span>
+<span class=o>-</span><span class=mi>1</span> <span class=o>-</span><span class=mi>1</span> <span class=o>-</span><span class=mi>1</span> <span class=o>-</span><span class=mi>1</span> <span class=o>-</span><span class=mi>1</span> <span class=o>-</span><span class=mi>1</span> <span class=o>-</span><span class=mi>1</span> <span class=mo>00</span>
+<span class=o>-</span><span class=mi>1</span> <span class=mo>01</span> <span class=o>-</span><span class=mi>1</span> <span class=o>-</span><span class=mi>1</span> <span class=o>-</span><span class=mi>1</span> <span class=o>-</span><span class=mi>1</span> <span class=o>-</span><span class=mi>1</span> <span class=mo>00</span>
+<span class=o>-</span><span class=mi>1</span> <span class=mo>01</span> <span class=o>-</span><span class=mi>1</span> <span class=o>-</span><span class=mi>1</span> <span class=mo>02</span> <span class=o>-</span><span class=mi>1</span> <span class=o>-</span><span class=mi>1</span> <span class=mo>00</span>
+
+<span class=o>&gt;&gt;&gt;</span> <span class=n>showSuffixArray</span><span class=p>(</span><span class=n>cabbage_guess</span><span class=p>)</span>
+<span class=mo>07</span> <span class=mo>01</span> <span class=mo>04</span> <span class=mo>03</span> <span class=mo>02</span> <span class=mo>00</span> <span class=mo>06</span> <span class=mo>05</span>
+</code></pre></td></tr></table></div></div><p>在这些后缀中，我们知道前三个是 LMS 后缀，依次是空后缀、abbage 和 age。因为这三个 LMS 后缀都是以不同的 LMS 子串开始的，所以它们得到了三个不同的名字（0，1 和 2）。这些名称被存储在 lmsNames 中，位于原始字符串中相应后缀出现的位置：分别是偏移量 7、1 和 4。</p><p>计算出 lmsNames 后，我们扔掉 lmsNames 的未使用的索引，生成 摘要字符串。</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-python data-lang=python><span class=o>&gt;&gt;&gt;</span> <span class=n>cabbage_summary</span>
+<span class=p>[</span><span class=mi>1</span><span class=p>,</span> <span class=mi>2</span><span class=p>,</span> <span class=mi>0</span><span class=p>]</span>
+</code></pre></td></tr></table></div></div><p>但这不是我们函数的唯一输出。我们还知道，摘要字符串是用三个不同的字符组成的字母表书写的:</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-python data-lang=python><span class=o>&gt;&gt;&gt;</span> <span class=n>cabbage_summary_alpha_size</span>
+<span class=mi>3</span>
+</code></pre></td></tr></table></div></div><p>而且我们有一个列表，存储了与摘要字符串中每个项目相关联的后缀偏移。</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-python data-lang=python><span class=o>&gt;&gt;&gt;</span> <span class=n>cabbage_summary_suffix_offsets</span>
+<span class=p>[</span><span class=mi>1</span><span class=p>,</span> <span class=mi>4</span><span class=p>,</span> <span class=mi>7</span><span class=p>]</span>
+</code></pre></td></tr></table></div></div><p>但如前所述，<code>cabbage</code>是一个很简单的字符串。让我们试试我们更复杂的例子，<code>baabaabac</code>:</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span><span class=lnt>8
+</span><span class=lnt>9
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-python data-lang=python><span class=o>&gt;&gt;&gt;</span> <span class=p>(</span>
+<span class=o>...</span>     <span class=n>baa_summary</span><span class=p>,</span>
+<span class=o>...</span>     <span class=n>baa_summary_alpha_size</span><span class=p>,</span>
+<span class=o>...</span>     <span class=n>baa_summary_suffix_offsets</span><span class=p>,</span>
+<span class=o>...</span> <span class=p>)</span> <span class=o>=</span> <span class=n>summariseSuffixArray</span><span class=p>(</span><span class=n>baa</span><span class=p>,</span> <span class=n>baa_guess</span><span class=p>,</span> <span class=n>baa_types</span><span class=p>)</span>
+<span class=o>-</span><span class=mi>1</span> <span class=o>-</span><span class=mi>1</span> <span class=o>-</span><span class=mi>1</span> <span class=o>-</span><span class=mi>1</span> <span class=o>-</span><span class=mi>1</span> <span class=o>-</span><span class=mi>1</span> <span class=o>-</span><span class=mi>1</span> <span class=o>-</span><span class=mi>1</span> <span class=o>-</span><span class=mi>1</span> <span class=mo>00</span>
+<span class=o>-</span><span class=mi>1</span> <span class=o>-</span><span class=mi>1</span> <span class=o>-</span><span class=mi>1</span> <span class=o>-</span><span class=mi>1</span> <span class=mo>01</span> <span class=o>-</span><span class=mi>1</span> <span class=o>-</span><span class=mi>1</span> <span class=o>-</span><span class=mi>1</span> <span class=o>-</span><span class=mi>1</span> <span class=mo>00</span>
+<span class=o>-</span><span class=mi>1</span> <span class=mo>01</span> <span class=o>-</span><span class=mi>1</span> <span class=o>-</span><span class=mi>1</span> <span class=mo>01</span> <span class=o>-</span><span class=mi>1</span> <span class=o>-</span><span class=mi>1</span> <span class=o>-</span><span class=mi>1</span> <span class=o>-</span><span class=mi>1</span> <span class=mo>00</span>
+<span class=o>-</span><span class=mi>1</span> <span class=mo>01</span> <span class=o>-</span><span class=mi>1</span> <span class=o>-</span><span class=mi>1</span> <span class=mo>01</span> <span class=o>-</span><span class=mi>1</span> <span class=o>-</span><span class=mi>1</span> <span class=mo>02</span> <span class=o>-</span><span class=mi>1</span> <span class=mo>00</span>
+</code></pre></td></tr></table></div></div><p>对于这个字符串，有两个 LMS 后缀是以相同的 LMS 子串开始的：aabaabac 和 aabac 都是以 aab 开始的，这些字符的类型在这两种情况下都是 SSL。因此，这两个后缀得到了相同的名称（1），我们的摘要字符串包含两个相同的字符:</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-python data-lang=python><span class=o>&gt;&gt;&gt;</span> <span class=n>baa_summary</span>
+<span class=p>[</span><span class=mi>1</span><span class=p>,</span> <span class=mi>1</span><span class=p>,</span> <span class=mi>2</span><span class=p>,</span> <span class=mi>0</span><span class=p>]</span>
+</code></pre></td></tr></table></div></div><p>虽然这个摘要字符串包含 4 个字符，但它仍然只包含 3 个不同的字符，所以字母大小仍然是 3:</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-python data-lang=python><span class=o>&gt;&gt;&gt;</span> <span class=n>baa_summary_alpha_size</span>
+<span class=mi>3</span>
+</code></pre></td></tr></table></div></div><p>而且我们又可以得到摘要字符串的后缀偏移 map：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-python data-lang=python><span class=o>&gt;&gt;&gt;</span> <span class=n>baa_summary_suffix_offsets</span>
+<span class=p>[</span><span class=mi>1</span><span class=p>,</span> <span class=mi>4</span><span class=p>,</span> <span class=mi>7</span><span class=p>,</span> <span class=mi>9</span><span class=p>]</span>
+</code></pre></td></tr></table></div></div><h3 id=得到总结的后缀数组>得到总结的后缀数组</h3><p>我们从一个字符串开始，想建立一个后缀数组，在这个过程中，我们已经建立了第二个字符串，现在我们也要把这个字符串做一个后缀数组？这不是循环推理吗？</p><p>嗯，差不多：这是递归推理。</p><p>如果我们要做递归，就需要有一个不是递归的基例。如果我们看一下我们上面的<code>cabbage</code>例子，我们得到了一个很简单的摘要字符串：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-python data-lang=python><span class=o>&gt;&gt;&gt;</span> <span class=n>cabbage_summary</span>
+<span class=p>[</span><span class=mi>1</span><span class=p>,</span> <span class=mi>2</span><span class=p>,</span> <span class=mi>0</span><span class=p>]</span>
+</code></pre></td></tr></table></div></div><p>是的，这个特殊的例子恰好小到你可以在脑海中建立后缀数组，但还有一个有趣的特点：我们已经说过这是一个由三个字符组成的字母表中的字符串，而字母表中的每个字符都会在这个字符串中的某个地方精确地出现一次。这意味着我们可以用我们可靠的老桶排序来创建一个后缀数组。</p><p>如果反过来看我们 <code>baabaabac</code> 的例子，前景就没有那么乐观了。</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-python data-lang=python><span class=o>&gt;&gt;&gt;</span> <span class=n>baa_summary</span>
+<span class=p>[</span><span class=mi>1</span><span class=p>,</span> <span class=mi>1</span><span class=p>,</span> <span class=mi>2</span><span class=p>,</span> <span class=mi>0</span><span class=p>]</span>
+</code></pre></td></tr></table></div></div><p>这个字符串仍然是三个字符的字母表，但它的长度超过了三个字符，这意味着至少有一个字符必须重复，而我们不能确定一个桶排序会做正确的事情&ndash;所以在这种情况下，我们必须递归。</p><p>值得指出的是，虽然理论上你可以在字母表中拥有一个包含重复的三个字符的字符串（比如说，[1，1，0]），但我们的 <code>summaryiseSuffixArray()</code>函数永远不会产生这样的东西，因为它总是使用字母表中的连续字符，而且它总是将字母表的大小设置为它所使用的不同字符数。</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-python data-lang=python><span class=o>&gt;&gt;&gt;</span> <span class=k>def</span> <span class=nf>makeSummarySuffixArray</span><span class=p>(</span><span class=n>summaryString</span><span class=p>,</span> <span class=n>summaryAlphabetSize</span><span class=p>):</span>
+<span class=o>...</span>     <span class=s2>&#34;&#34;&#34;
+</span><span class=s2>...     Construct a sorted suffix array of the summary string.
+</span><span class=s2>...     &#34;&#34;&#34;</span>
+<span class=o>...</span>     <span class=k>if</span> <span class=n>summaryAlphabetSize</span> <span class=o>==</span> <span class=nb>len</span><span class=p>(</span><span class=n>summaryString</span><span class=p>):</span>
+<span class=o>...</span>         <span class=c1># Every character of this summary string appears once and only</span>
+<span class=o>...</span>         <span class=c1># once, so we can make the suffix array with a bucket sort.</span>
+<span class=o>...</span>         <span class=n>summarySuffixArray</span> <span class=o>=</span> <span class=p>[</span><span class=o>-</span><span class=mi>1</span><span class=p>]</span> <span class=o>*</span> <span class=p>(</span><span class=nb>len</span><span class=p>(</span><span class=n>summaryString</span><span class=p>)</span> <span class=o>+</span> <span class=mi>1</span><span class=p>)</span>
+<span class=o>...</span>
+<span class=o>...</span>         <span class=c1># Always include the empty suffix at the beginning.</span>
+<span class=o>...</span>         <span class=n>summarySuffixArray</span><span class=p>[</span><span class=mi>0</span><span class=p>]</span> <span class=o>=</span> <span class=nb>len</span><span class=p>(</span><span class=n>summaryString</span><span class=p>)</span>
+<span class=o>...</span>
+<span class=o>...</span>         <span class=k>for</span> <span class=n>x</span> <span class=ow>in</span> <span class=nb>range</span><span class=p>(</span><span class=nb>len</span><span class=p>(</span><span class=n>summaryString</span><span class=p>)):</span>
+<span class=o>...</span>             <span class=n>y</span> <span class=o>=</span> <span class=n>summaryString</span><span class=p>[</span><span class=n>x</span><span class=p>]</span>
+<span class=o>...</span>             <span class=n>summarySuffixArray</span><span class=p>[</span><span class=n>y</span><span class=o>+</span><span class=mi>1</span><span class=p>]</span> <span class=o>=</span> <span class=n>x</span>
+<span class=o>...</span>
+<span class=o>...</span>     <span class=k>else</span><span class=p>:</span>
+<span class=o>...</span>         <span class=c1># This summary string is a little more complex, so we&#39;ll have</span>
+<span class=o>...</span>         <span class=c1># to use recursion.</span>
+<span class=o>...</span>         <span class=n>summarySuffixArray</span> <span class=o>=</span> <span class=n>makeSuffixArrayByInducedSorting</span><span class=p>(</span>
+<span class=o>...</span>             <span class=n>summaryString</span><span class=p>,</span>
+<span class=o>...</span>             <span class=n>summaryAlphabetSize</span><span class=p>,</span>
+<span class=o>...</span>         <span class=p>)</span>
+<span class=o>...</span>
+<span class=o>...</span>     <span class=k>return</span> <span class=n>summarySuffixArray</span>
+</code></pre></td></tr></table></div></div><p>我们还不能在<code>baabaabac</code>摘要上测试这个函数，因为我们还没有完成递归的实现，但我们可以在<code>cabbage</code>摘要上测试它。</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-python data-lang=python><span class=o>&gt;&gt;&gt;</span> <span class=n>cabbage_summary_suffix_array</span> <span class=o>=</span> <span class=n>makeSummarySuffixArray</span><span class=p>(</span>
+<span class=o>...</span>     <span class=n>cabbage_summary</span><span class=p>,</span> <span class=n>cabbage_summary_alpha_size</span><span class=p>,</span>
+<span class=o>...</span> <span class=p>)</span>
+<span class=o>&gt;&gt;&gt;</span> <span class=n>showSuffixArray</span><span class=p>(</span><span class=n>cabbage_summary_suffix_array</span><span class=p>)</span>
+<span class=mo>03</span> <span class=mo>02</span> <span class=mo>00</span> <span class=mo>01</span>
+</code></pre></td></tr></table></div></div><p>和用内置排序算法比较:</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-python data-lang=python><span class=o>&gt;&gt;&gt;</span> <span class=n>showSuffixArray</span><span class=p>(</span><span class=n>naivelyMakeSuffixArray</span><span class=p>(</span><span class=n>cabbage_summary</span><span class=p>))</span>
+<span class=mo>03</span> <span class=mo>02</span> <span class=mo>00</span> <span class=mo>01</span>
+</code></pre></td></tr></table></div></div><h3 id=建立真正的后缀数组>建立真正的后缀数组</h3><p>最后，我们开始根据摘要字符串的后缀数组构建真正的、最终的后缀数组。和之前一样，我们先将 LMS 后缀放入后缀数组中，然后我们可以通过诱导排序来填充所有其他的后缀。与之前不同的是，我们不只是按照找到的任何顺序将它们桶式排序到位，而是按照摘要字符串的后缀数组决定的顺序插入。</p><p>请记住，当我们建立摘要字符串时（其中每个字符都是一个 LMS 子串的生成名称），我们还建立了一个相应的摘要 SuffixOffsets 数组，该数组将摘要字符串中的字符映射回原始字符串中的 LMS 子串（因此是 LMS 后缀），所以这就是我们要使用的。</p><p>这个过程是这样的。摘要字符串的后缀数组中的每个条目都指向摘要中的一个位置。我们在 summarySuffixOffsets 中查看相同的位置，以找到我们原始字符串的相应 LMS 后缀的偏移量。然后，我们将该 LMS 后缀放入正确的桶中，相信 summary 后缀数组会将它们按正确的顺序放入桶中。</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-python data-lang=python><span class=o>&gt;&gt;&gt;</span> <span class=k>def</span> <span class=nf>accurateLMSSort</span><span class=p>(</span><span class=n>string</span><span class=p>,</span> <span class=n>bucketSizes</span><span class=p>,</span> <span class=n>typemap</span><span class=p>,</span>
+<span class=o>...</span>         <span class=n>summarySuffixArray</span><span class=p>,</span> <span class=n>summarySuffixOffsets</span><span class=p>):</span>
+<span class=o>...</span>     <span class=s2>&#34;&#34;&#34;
+</span><span class=s2>...     Make a suffix array with LMS suffixes exactly right.
+</span><span class=s2>...     &#34;&#34;&#34;</span>
+<span class=o>...</span>     <span class=c1># A suffix for every character, plus the empty suffix.</span>
+<span class=o>...</span>     <span class=n>suffixOffsets</span> <span class=o>=</span> <span class=p>[</span><span class=o>-</span><span class=mi>1</span><span class=p>]</span> <span class=o>*</span> <span class=p>(</span><span class=nb>len</span><span class=p>(</span><span class=n>string</span><span class=p>)</span> <span class=o>+</span> <span class=mi>1</span><span class=p>)</span>
+<span class=o>...</span>
+<span class=o>...</span>     <span class=c1># As before, we&#39;ll be adding suffixes to the ends of their</span>
+<span class=o>...</span>     <span class=c1># respective buckets, so to keep them in the right order we&#39;ll</span>
+<span class=o>...</span>     <span class=c1># have to iterate through summarySuffixArray in reverse order.</span>
+<span class=o>...</span>     <span class=n>bucketTails</span> <span class=o>=</span> <span class=n>findBucketTails</span><span class=p>(</span><span class=n>bucketSizes</span><span class=p>)</span>
+<span class=o>...</span>     <span class=k>for</span> <span class=n>i</span> <span class=ow>in</span> <span class=nb>range</span><span class=p>(</span><span class=nb>len</span><span class=p>(</span><span class=n>summarySuffixArray</span><span class=p>)</span><span class=o>-</span><span class=mi>1</span><span class=p>,</span> <span class=mi>1</span><span class=p>,</span> <span class=o>-</span><span class=mi>1</span><span class=p>):</span>
+<span class=o>...</span>         <span class=n>stringIndex</span> <span class=o>=</span> <span class=n>summarySuffixOffsets</span><span class=p>[</span><span class=n>summarySuffixArray</span><span class=p>[</span><span class=n>i</span><span class=p>]]</span>
+<span class=o>...</span>
+<span class=o>...</span>         <span class=c1># Which bucket does this suffix go into?</span>
+<span class=o>...</span>         <span class=n>bucketIndex</span> <span class=o>=</span> <span class=n>string</span><span class=p>[</span><span class=n>stringIndex</span><span class=p>]</span>
+<span class=o>...</span>         <span class=c1># Add the suffix at the tail of the bucket...</span>
+<span class=o>...</span>         <span class=n>suffixOffsets</span><span class=p>[</span><span class=n>bucketTails</span><span class=p>[</span><span class=n>bucketIndex</span><span class=p>]]</span> <span class=o>=</span> <span class=n>stringIndex</span>
+<span class=o>...</span>         <span class=c1># ...and move the tail pointer down.</span>
+<span class=o>...</span>         <span class=n>bucketTails</span><span class=p>[</span><span class=n>bucketIndex</span><span class=p>]</span> <span class=o>-=</span> <span class=mi>1</span>
+<span class=o>...</span>
+<span class=o>...</span>         <span class=n>showSuffixArray</span><span class=p>(</span><span class=n>suffixOffsets</span><span class=p>)</span>
+<span class=o>...</span>
+<span class=o>...</span>     <span class=c1># Always include the empty suffix at the beginning.</span>
+<span class=o>...</span>     <span class=n>suffixOffsets</span><span class=p>[</span><span class=mi>0</span><span class=p>]</span> <span class=o>=</span> <span class=nb>len</span><span class=p>(</span><span class=n>string</span><span class=p>)</span>
+<span class=o>...</span>
+<span class=o>...</span>     <span class=n>showSuffixArray</span><span class=p>(</span><span class=n>suffixOffsets</span><span class=p>)</span>
+<span class=o>...</span>
+<span class=o>...</span>     <span class=k>return</span> <span class=n>suffixOffsets</span>
+</code></pre></td></tr></table></div></div><p>注意：为了确保我们的 LMS 后缀能在后面的诱导排序中存活下来，我们需要把它们插入到它们的桶的最后，所以我们在向后插入后缀的时候，需要向后走过 summarySuffixArray，以保持它们的相对顺序。</p><p>另外，我们并不是对 summarySuffixArray 中的每个条目都进行处理：第一个条目对应的是 summary 字符串的空后缀，它不对应原始字符串的任何后缀。第二个条目对应的是原始字符串的空后缀，我们无法对它进行桶式排序，因为它是空的。不过我们已经知道它在开头，所以这不是问题。</p><p>让我们来看看这个算法，因为它适用于我们的老朋友<code>cabbage</code>。提醒一下，这里是 accounterLMSSort()的输入。</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-python data-lang=python><span class=o>&gt;&gt;&gt;</span> <span class=n>showSuffixArray</span><span class=p>(</span><span class=n>cabbage_summary_suffix_array</span><span class=p>)</span>
+<span class=mo>03</span> <span class=mo>02</span> <span class=mo>00</span> <span class=mo>01</span>
+<span class=o>&gt;&gt;&gt;</span> <span class=n>showSuffixArray</span><span class=p>(</span><span class=n>cabbage_summary</span><span class=p>)</span>
+<span class=mo>01</span> <span class=mo>02</span> <span class=mo>00</span>
+<span class=o>&gt;&gt;&gt;</span> <span class=n>showSuffixArray</span><span class=p>(</span><span class=n>cabbage_summary_suffix_offsets</span><span class=p>)</span>
+<span class=mo>01</span> <span class=mo>04</span> <span class=mo>07</span>
+</code></pre></td></tr></table></div></div><p>现在，我们可以走一遍算法。</p><ul><li>我们在摘要的后缀数组中找到的第一个条目（最后一个条目，因为我们是从后往前走）是 01。如果我们查看 summarySuffixOffsets 的偏移量 1，我们看到这对应于原始字符串第 4 位（age）的 LMS 后缀，所以我们可以在 a 桶的最后插入该后缀。</li><li>summary 的后缀数组的下一个条目是 00，summarySuffixOffsets 的偏移量 0 对应于原始字符串第 1 个位置的 LMS 后缀（abbage），所以我们把这个后缀槽到 age 之前的 a 桶中。</li><li>倒数第二的条目被跳过，因为它指向原始字符串的空后缀，而我们无法将其进行桶排序。</li><li>最后一条被跳过，因为它代表摘要字符串末尾的空后缀，它在原始字符串中没有对应的 LMS 后缀。</li><li>最后，我们知道，空的后缀（在第 7 位）将出现在最后的后缀数组的开头。</li></ul><p>当我们运行我们的函数时，我们可以看到同样的步骤发生。</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-python data-lang=python><span class=o>&gt;&gt;&gt;</span> <span class=n>cabbage_real</span> <span class=o>=</span> <span class=n>accurateLMSSort</span><span class=p>(</span><span class=sa>b</span><span class=s1>&#39;cabbage&#39;</span><span class=p>,</span> <span class=n>cabbage_buckets</span><span class=p>,</span>
+<span class=o>...</span>     <span class=n>cabbage_types</span><span class=p>,</span> <span class=n>cabbage_summary_suffix_array</span><span class=p>,</span>
+<span class=o>...</span>     <span class=n>cabbage_summary_suffix_offsets</span><span class=p>)</span>
+<span class=o>-</span><span class=mi>1</span> <span class=o>-</span><span class=mi>1</span> <span class=mo>04</span> <span class=o>-</span><span class=mi>1</span> <span class=o>-</span><span class=mi>1</span> <span class=o>-</span><span class=mi>1</span> <span class=o>-</span><span class=mi>1</span> <span class=o>-</span><span class=mi>1</span>
+<span class=o>-</span><span class=mi>1</span> <span class=mo>01</span> <span class=mo>04</span> <span class=o>-</span><span class=mi>1</span> <span class=o>-</span><span class=mi>1</span> <span class=o>-</span><span class=mi>1</span> <span class=o>-</span><span class=mi>1</span> <span class=o>-</span><span class=mi>1</span>
+<span class=mo>07</span> <span class=mo>01</span> <span class=mo>04</span> <span class=o>-</span><span class=mi>1</span> <span class=o>-</span><span class=mi>1</span> <span class=o>-</span><span class=mi>1</span> <span class=o>-</span><span class=mi>1</span> <span class=o>-</span><span class=mi>1</span>
+</code></pre></td></tr></table></div></div><p>04 是在 a 桶的末尾，然后前面紧接着是 01，最后是空后缀在开头得到它的特殊位置。</p><h3 id=整合在一起>整合在一起</h3><p>在将 LMS 后缀放到正确的位置后，所有其他后缀都会像之前一样，通过第二轮诱导排序归位。我们现在已经描述了 makeSuffixArrayByInducedSorting()调用的所有函数，所以我们可以调用它来有效地建立一个我们喜欢的任何字符串的后缀数组&mldr;&mldr;以及其内部计算的详细日志（为简洁起见这里省略）。</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span><span class=lnt>8
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-python data-lang=python><span class=o>&gt;&gt;&gt;</span> <span class=n>showSuffixArray</span><span class=p>(</span><span class=n>makeSuffixArrayByInducedSorting</span><span class=p>(</span><span class=sa>b</span><span class=s1>&#39;cabbage&#39;</span><span class=p>,</span> <span class=mi>256</span><span class=p>))</span>
+<span class=o>-</span><span class=mi>1</span> <span class=o>-</span><span class=mi>1</span> <span class=mo>01</span> <span class=o>-</span><span class=mi>1</span> <span class=o>-</span><span class=mi>1</span> <span class=o>-</span><span class=mi>1</span> <span class=o>-</span><span class=mi>1</span> <span class=o>-</span><span class=mi>1</span>
+<span class=o>...</span>
+<span class=mo>07</span> <span class=mo>01</span> <span class=mo>04</span> <span class=mo>03</span> <span class=mo>02</span> <span class=mo>00</span> <span class=mo>06</span> <span class=mo>05</span>
+<span class=o>&gt;&gt;&gt;</span> <span class=n>showSuffixArray</span><span class=p>(</span><span class=n>makeSuffixArrayByInducedSorting</span><span class=p>(</span><span class=n>baa</span><span class=p>,</span> <span class=mi>256</span><span class=p>))</span>
+<span class=o>-</span><span class=mi>1</span> <span class=o>-</span><span class=mi>1</span> <span class=o>-</span><span class=mi>1</span> <span class=o>-</span><span class=mi>1</span> <span class=o>-</span><span class=mi>1</span> <span class=mo>01</span> <span class=o>-</span><span class=mi>1</span> <span class=o>-</span><span class=mi>1</span> <span class=o>-</span><span class=mi>1</span> <span class=o>-</span><span class=mi>1</span>
+<span class=o>...</span>
+<span class=mi>09</span> <span class=mo>01</span> <span class=mo>04</span> <span class=mo>02</span> <span class=mo>05</span> <span class=mo>07</span> <span class=mo>00</span> <span class=mo>03</span> <span class=mo>06</span> <span class=mi>08</span>
+</code></pre></td></tr></table></div></div><p>但是，由于大多数人想要建立一个排序后缀数组的人都会有一串字节，而不是任意大小的字母串，所以让我们做一个具有合理默认值的包装函数。</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-python data-lang=python><span class=o>&gt;&gt;&gt;</span> <span class=k>def</span> <span class=nf>makeSuffixArray</span><span class=p>(</span><span class=n>bytestring</span><span class=p>):</span>
+<span class=o>...</span>     <span class=k>return</span> <span class=n>makeSuffixArrayByInducedSorting</span><span class=p>(</span><span class=n>bytestring</span><span class=p>,</span> <span class=mi>256</span><span class=p>)</span>
+</code></pre></td></tr></table></div></div><p>现在我们完成了。</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-python data-lang=python><span class=o>&gt;&gt;&gt;</span> <span class=n>naivelyMakeSuffixArray</span><span class=p>(</span><span class=sa>b</span><span class=s1>&#39;cabbage&#39;</span><span class=p>)</span> <span class=o>==</span> <span class=n>makeSuffixArray</span><span class=p>(</span><span class=sa>b</span><span class=s1>&#39;cabbage&#39;</span><span class=p>)</span>
+<span class=bp>True</span>
+<span class=o>&gt;&gt;&gt;</span> <span class=n>naivelyMakeSuffixArray</span><span class=p>(</span><span class=n>baa</span><span class=p>)</span> <span class=o>==</span> <span class=n>makeSuffixArray</span><span class=p>(</span><span class=n>baa</span><span class=p>)</span>
+<span class=bp>True</span>
+</code></pre></td></tr></table></div></div></div><div class=post-footer id=post-footer><div class=post-info><div class=post-info-line><div class=post-info-mod><span>更新于 2020-08-15</span></div><div class=post-info-license></div></div><div class=post-info-line><div class=post-info-md><span><a class=link-to-markdown href=/2020/08/%E5%90%8E%E7%BC%80%E6%95%B0%E7%BB%84%E5%8F%8Asa-is%E7%AE%97%E6%B3%95%E7%AC%94%E8%AE%B0/index.md target=_blank>阅读原始文档</a></span></div><div class=post-info-share><span><a href=javascript:void(0); title="分享到 Twitter" data-sharer=twitter data-url=https://www.jesse233.top/2020/08/%E5%90%8E%E7%BC%80%E6%95%B0%E7%BB%84%E5%8F%8Asa-is%E7%AE%97%E6%B3%95%E7%AC%94%E8%AE%B0/ data-title=后缀数组及SA-IS算法笔记 data-hashtags=SA-IS><i class="fab fa-twitter fa-fw"></i></a><a href=javascript:void(0); title="分享到 Facebook" data-sharer=facebook data-url=https://www.jesse233.top/2020/08/%E5%90%8E%E7%BC%80%E6%95%B0%E7%BB%84%E5%8F%8Asa-is%E7%AE%97%E6%B3%95%E7%AC%94%E8%AE%B0/ data-hashtag=SA-IS><i class="fab fa-facebook-square fa-fw"></i></a><a href=javascript:void(0); title="分享到 WhatsApp" data-sharer=whatsapp data-url=https://www.jesse233.top/2020/08/%E5%90%8E%E7%BC%80%E6%95%B0%E7%BB%84%E5%8F%8Asa-is%E7%AE%97%E6%B3%95%E7%AC%94%E8%AE%B0/ data-title=后缀数组及SA-IS算法笔记 data-web><i class="fab fa-whatsapp fa-fw"></i></a><a href=javascript:void(0); title="分享到 Line" data-sharer=line data-url=https://www.jesse233.top/2020/08/%E5%90%8E%E7%BC%80%E6%95%B0%E7%BB%84%E5%8F%8Asa-is%E7%AE%97%E6%B3%95%E7%AC%94%E8%AE%B0/ data-title=后缀数组及SA-IS算法笔记><i data-svg-src=https://cdn.jsdelivr.net/npm/simple-icons@2.14.0/icons/line.svg></i></a><a href=javascript:void(0); title="分享到 微博" data-sharer=weibo data-url=https://www.jesse233.top/2020/08/%E5%90%8E%E7%BC%80%E6%95%B0%E7%BB%84%E5%8F%8Asa-is%E7%AE%97%E6%B3%95%E7%AC%94%E8%AE%B0/ data-title=后缀数组及SA-IS算法笔记><i class="fab fa-weibo fa-fw"></i></a><a href=javascript:void(0); title="分享到 Myspace" data-sharer=myspace data-url=https://www.jesse233.top/2020/08/%E5%90%8E%E7%BC%80%E6%95%B0%E7%BB%84%E5%8F%8Asa-is%E7%AE%97%E6%B3%95%E7%AC%94%E8%AE%B0/ data-title=后缀数组及SA-IS算法笔记 data-description><i data-svg-src=https://cdn.jsdelivr.net/npm/simple-icons@2.14.0/icons/myspace.svg></i></a><a href=javascript:void(0); title="分享到 Blogger" data-sharer=blogger data-url=https://www.jesse233.top/2020/08/%E5%90%8E%E7%BC%80%E6%95%B0%E7%BB%84%E5%8F%8Asa-is%E7%AE%97%E6%B3%95%E7%AC%94%E8%AE%B0/ data-title=后缀数组及SA-IS算法笔记 data-description><i class="fab fa-blogger fa-fw"></i></a><a href=javascript:void(0); title="分享到 Evernote" data-sharer=evernote data-url=https://www.jesse233.top/2020/08/%E5%90%8E%E7%BC%80%E6%95%B0%E7%BB%84%E5%8F%8Asa-is%E7%AE%97%E6%B3%95%E7%AC%94%E8%AE%B0/ data-title=后缀数组及SA-IS算法笔记><i class="fab fa-evernote fa-fw"></i></a></span></div></div></div><div class=post-info-more><section class=post-tags><i class="fas fa-tags fa-fw"></i>&nbsp;<a href=/tags/sa-is/>SA-IS</a></section><section><span><a href=javascript:void(0); onclick=window.history.back();>返回</a></span>&nbsp;|&nbsp;<span><a href=/>主页</a></span></section></div><div class=post-nav><a href=/2020/08/webhook%E6%95%99%E7%A8%8B/ class=prev rel=prev title=Webhook教程><i class="fas fa-angle-left fa-fw"></i>Webhook教程</a></div></div><div id=comments><div id=utterances></div><noscript>Please enable JavaScript to view the comments powered by <a href=https://utteranc.es/>Utterances</a>.</noscript></div></article></div></main><footer class=footer><div class=footer-container><div class=footer-line>由 <a href=https://gohugo.io/ target=_blank rel="noopener noreffer" title="Hugo 0.74.3">Hugo</a> 强力驱动 | 主题 - <a href=https://github.com/dillonzq/LoveIt target=_blank rel="noopener noreffer" title="LoveIt 0.2.10"><i class="far fa-kiss-wink-heart fa-fw"></i>LoveIt</a></div><div class=footer-line><i class="far fa-copyright fa-fw"></i><span itemprop=copyrightYear>2020</span><span class=author itemprop=copyrightHolder>&nbsp;<a href=https://github.com/jesse996 target=_blank>Jesse</a></span><span class=icp-splitter>&nbsp;|&nbsp;</span><br class=icp-br><span class=icp>鄂ICP备20000568号</span></div></div></footer></div><div id=fixed-buttons><a href=# id=back-to-top class=fixed-button title=回到顶部><i class="fas fa-arrow-up fa-fw"></i></a><a href=# id=view-comments class=fixed-button title=查看评论><i class="fas fa-comment fa-fw"></i></a></div><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/lightgallery.js@1.2.0/dist/css/lightgallery.min.css><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/katex.min.css><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/contrib/copy-tex.min.css><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.css><script type=text/javascript src=https://cdn.jsdelivr.net/npm/smooth-scroll@16.1.3/dist/smooth-scroll.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/autocomplete.js@0.37.1/dist/autocomplete.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lunr@2.3.8/lunr.min.js></script><script type=text/javascript src=/lib/lunr/lunr.stemmer.support.min.js></script><script type=text/javascript src=/lib/lunr/lunr.zh.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lazysizes@5.2.2/lazysizes.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lightgallery.js@1.2.0/dist/js/lightgallery.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lg-thumbnail.js@1.2.0/dist/lg-thumbnail.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lg-zoom.js@1.2.0/dist/lg-zoom.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/sharer.js@0.4.0/sharer.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/katex.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/contrib/auto-render.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/contrib/copy-tex.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/contrib/mhchem.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.js></script><script type=text/javascript src=/baidu.js></script><script type=text/javascript>window.config={"code":{"copyTitle":"复制到剪贴板","maxShownLines":30},"comment":{"utterances":{"darkTheme":"github-dark","issueTerm":"pathname","label":"","lightTheme":"github-light","repo":"jesse996/jesse996.github.io"}},"cookieconsent":{"content":{"dismiss":"同意","link":"了解更多","message":"本网站使用 Cookies 来改善您的浏览体验."},"enable":true,"palette":{"button":{"background":"#f0f0f0"},"popup":{"background":"#1aa3ff"}},"theme":"edgeless"},"lightGallery":{"actualSize":false,"exThumbImage":"data-thumbnail","hideBarsDelay":2000,"selector":".lightgallery","speed":400,"thumbContHeight":80,"thumbWidth":80,"thumbnail":true},"math":{"delimiters":[{"display":true,"left":"$$","right":"$$"},{"display":true,"left":"\\[","right":"\\]"},{"display":false,"left":"$","right":"$"},{"display":false,"left":"\\(","right":"\\)"}],"strict":false},"search":{"highlightTag":"em","lunrIndexURL":"/index.json","lunrLanguageCode":"zh","lunrSegmentitURL":"/lib/lunr/lunr.segmentit.js","maxResultLength":10,"noResultsFound":"没有找到结果","snippetLength":50,"type":"lunr"}};</script><script type=text/javascript src=/js/theme.min.js></script><script type=text/javascript>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-97TKQKDH9W');</script><script type=text/javascript src="https://www.googletagmanager.com/gtag/js?id=G-97TKQKDH9W" async></script></body></html>
