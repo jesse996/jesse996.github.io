@@ -1048,7 +1048,7 @@ LSLLSLLS
 <span class=mo>01</span> <span class=mo>02</span> <span class=mo>00</span>
 <span class=o>&gt;&gt;&gt;</span> <span class=n>showSuffixArray</span><span class=p>(</span><span class=n>cabbage_summary_suffix_offsets</span><span class=p>)</span>
 <span class=mo>01</span> <span class=mo>04</span> <span class=mo>07</span>
-</code></pre></td></tr></table></div></div><p>现在，我们可以走一遍算法。</p><ul><li>我们在摘要的后缀数组中找到的第一个条目（最后一个条目，因为我们是从后往前走）是 01。如果我们查看 summarySuffixOffsets 的偏移量 1，我们看到这对应于原始字符串第 4 位（age）的 LMS 后缀，所以我们可以在 a 桶的最后插入该后缀。</li><li>summary 的后缀数组的下一个条目是 00，summarySuffixOffsets 的偏移量 0 对应于原始字符串第 1 个位置的 LMS 后缀（abbage），所以我们把这个后缀槽到 age 之前的 a 桶中。</li><li>倒数第二的条目被跳过，因为它指向原始字符串的空后缀，而我们无法将其进行桶排序。</li><li>最后一条被跳过，因为它代表摘要字符串末尾的空后缀，它在原始字符串中没有对应的 LMS 后缀。</li><li>最后，我们知道，空的后缀（在第 7 位）将出现在最后的后缀数组的开头。</li></ul><p>当我们运行我们的函数时，我们可以看到同样的步骤发生。</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
+</code></pre></td></tr></table></div></div><p>现在，我们可以走一遍算法。</p><ul><li>我们在摘要的后缀数组中找到的第一个条目（最后一个条目，因为我们是从后往前走）是 01。如果我们查看 summarySuffixOffsets 的偏移量 1，我们看到这对应于原始字符串第 4 位（age）的 LMS 后缀，所以我们可以在 a 桶的最后插入该后缀。</li><li>summary 的后缀数组的下一个条目是 00，summarySuffixOffsets 的偏移量 0 对应于原始字符串第 1 个位置的 LMS 后缀（abbage），所以我们把这个后缀插到 age 之前的 a 桶中。</li><li>倒数第二的条目被跳过，因为它指向原始字符串的空后缀，而我们无法将其进行桶排序。</li><li>最后一条被跳过，因为它代表摘要字符串末尾的空后缀，它在原始字符串中没有对应的 LMS 后缀。</li><li>最后，我们知道，空的后缀（在第 7 位）将出现在最后的后缀数组的开头。</li></ul><p>当我们运行我们的函数时，我们可以看到同样的步骤发生。</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
 </span><span class=lnt>2
 </span><span class=lnt>3
 </span><span class=lnt>4
