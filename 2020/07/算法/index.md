@@ -1,9 +1,9 @@
 # 算法
 
 
-# 图
+## 图
 
-## 无向图
+### 无向图
 
 -   图的表示方法：邻接表
 -   dfs 和 bfs 的区别：dfs 是用栈，bfs 用队列
@@ -36,7 +36,7 @@ public class CC {
 
 ```
 
-## 有向图
+### 有向图
 
 -   有向无环图(DAG): 不含有向环的有向图
 -   当且仅当一副有向图是无环图时它才能进行拓扑排序
@@ -74,7 +74,9 @@ public class KosarajuSCC {
 }
 ```
 
-## 插入排序
+## 排序
+
+### 插入排序
 
 ```rust
 fn insert<T: Ord + Copy>(a: &mut [T]) {
@@ -90,7 +92,7 @@ fn insert<T: Ord + Copy>(a: &mut [T]) {
 }
 ```
 
-## 希尔排序
+### 希尔排序
 
 ```rust
 fn shell<T: Ord + Copy>(a: &mut [T]) {
@@ -118,7 +120,7 @@ fn shell<T: Ord + Copy>(a: &mut [T]) {
 }
 ```
 
-## 归并排序
+### 归并排序
 
 ```rust
 //原地归并
@@ -181,7 +183,7 @@ fn merge_sort_bu<T: Ord + Copy>(a: &mut [T], lo: usize, hi: usize) {
 }
 ```
 
-## 堆排序
+### 堆排序
 
 ```rust
 #[derive(Debug)]
@@ -255,69 +257,7 @@ public class UF{
 }
 ```
 
-加权 quick-union 算法：
-**将小数的根节点连接到大树的根节点**
-
-```java
-public class WeightedQuickUnionUF{
-    private int[] id;
-    private int[] sz;
-    private int count;
-
-    public WeightedQuickUnionUF(int N) {
-        count = N;
-        id = new int[N];
-        for (int i = 0; i < N; i++) id[i] = i;
-        sz = new int[N];
-        for (int i = 0; i < N; i++) sz[i] = 1;
-    }
-
-    public int getCount() {
-        return count;
-    }
-
-    public boolean connected(int p, int q) {
-        return find(p) == find(q);
-    }
-
-    public int find(int p) {
-        while (p != id[p]) p = id[p];
-        return p;
-    }
-
-    public void union(int p, int q) {
-        int i = find(p);
-        int j = find(q);
-        if (i == j) return;
-        if (sz[i] < sz[j]) {
-            id[i] = j;
-            sz[j] += sz[i];
-        } else {
-            id[j] = i;
-            sz[i] += sz[j];
-        }
-        count--;
-    }
-}
-```
-
-最优解法：**路径压缩的加权 quick-union 算法**
-要实现路径压缩，只需要为`find()`添加一个循环，将在路径上遇到的所有节点都直接链接到根节点。
-
-```java
-    public int find(int p) {
-        int root = p;
-        while (root != id[root]) root = id[root];
-        while (p!=root) {
-            int next = id[p];
-            id[p] = root;
-            p = next;
-        }
-        return root;
-    }
-```
-
-## 快速排序
+### 快速排序
 
 ```rust
 fn quick_sort(a:&[i32],lo:i32,hi:i32){
@@ -372,7 +312,71 @@ int KMP(char * t, char * p)
 }
 ```
 
-# BM 算法原理
+## 加权 quick-union 算法：
+
+**将小数的根节点连接到大树的根节点**
+
+```java
+public class WeightedQuickUnionUF{
+    private int[] id;
+    private int[] sz;
+    private int count;
+
+    public WeightedQuickUnionUF(int N) {
+        count = N;
+        id = new int[N];
+        for (int i = 0; i < N; i++) id[i] = i;
+        sz = new int[N];
+        for (int i = 0; i < N; i++) sz[i] = 1;
+    }
+
+    public int getCount() {
+        return count;
+    }
+
+    public boolean connected(int p, int q) {
+        return find(p) == find(q);
+    }
+
+    public int find(int p) {
+        while (p != id[p]) p = id[p];
+        return p;
+    }
+
+    public void union(int p, int q) {
+        int i = find(p);
+        int j = find(q);
+        if (i == j) return;
+        if (sz[i] < sz[j]) {
+            id[i] = j;
+            sz[j] += sz[i];
+        } else {
+            id[j] = i;
+            sz[i] += sz[j];
+        }
+        count--;
+    }
+}
+```
+
+## 最优解法：**路径压缩的加权 quick-union 算法**
+
+要实现路径压缩，只需要为`find()`添加一个循环，将在路径上遇到的所有节点都直接链接到根节点。
+
+```java
+    public int find(int p) {
+        int root = p;
+        while (root != id[root]) root = id[root];
+        while (p!=root) {
+            int next = id[p];
+            id[p] = root;
+            p = next;
+        }
+        return root;
+    }
+```
+
+## BM 算法原理
 
 [字符串匹配 ---- BM 算法原理](https://zhuanlan.zhihu.com/p/63596339)
 
