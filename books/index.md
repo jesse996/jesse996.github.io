@@ -27,6 +27,7 @@
 -   [x] 码出高效：Java 开发手册
 -   [x] Spring Cloud Alibaba 微服务原理与实战
 -   [x] 深入理解 Spring Cloud 与微服务构建
+-   [x] Spring Boot+Vue 全栈开发实战
 -   [x] C++ primer 第五版
 -   [x] 深入浅出通信原理
 -   [x] 通信原理
