@@ -59,7 +59,7 @@ let mut f = vec![0; v + 1];
 
 // 0 <= i < n
 for i in 0..n {
-    zoro_one_pack(&mut f, cost[i], value[i], v);
+    complete_pack(&mut f, cost[i], value[i], v);
 }
 //最后价值总和最大的值就是f[v]
 ```
