@@ -45,6 +45,79 @@ static int lcp(String a,String b){
 }
 ```
 
+```c++
+int n, k;
+const int MAXN = 100005;
+int rank[MAXN + 1];
+int tmp[MAXN + 1];
+int sa[MAXN], lcp[MAXN];
+
+bool compare_sa(int i, int j) {
+    if (rank[i] != rank[j]) return rank[i] < rank[j];
+    else {
+        int ri = i + k <= n ? rank[i + k] : -1;
+        int rj = j + k <= n ? rank[j + k] : -1;
+        return ri < rj;
+    }
+}
+
+void construct_sa(std::string S, int *sa) {
+    n = S.length();
+    //初始化长度为1，rank直接取字符的编码
+    for (int i = 0; i <= n; ++i) {
+        sa[i] = i;
+        rank[i] = i < n ? S[i] : -1;
+    }
+    //利用对长度为k的排序结果对长度为2k排序
+    for (k = 1; k <= n; k *=2) {
+        std::sort(sa, sa + n + 1, compare_sa);
+        //现在tmp临时存储新计算的rank，再转存回rank中
+        tmp[sa[0]] = 0;
+        for (int i = 1; i <= n; ++i) {
+            tmp[sa[i]] = tmp[sa[i - 1]] + (compare_sa(sa[i - 1], sa[i]) ? 1 : 0);
+        }
+        for (int i = 0; i <= n; ++i) {
+            rank[i] = tmp[i];
+        }
+    }
+}
+
+void construct_lcp(std::string S, int *sa, int *lcp) {
+    int n = S.length();
+    for (int i = 0; i <= n; ++i) {
+        rank[sa[i]] = i;
+    }
+    int h = 0;
+    lcp[0] = 0;
+    for (int i = 0; i < n; ++i) {
+        int j = sa[rank[i] - 1];
+        if (h > 0) h--;
+        for (; j + h < n && i + h < n; ++h) {
+            if (S[j + h] != S[i + h]) break;
+        }
+        lcp[rank[i] ] = h;
+    }
+}
+
+std::string longestDupSubstring(std::string S) {
+    construct_sa(S,sa);
+    construct_lcp(S,sa,lcp);
+    for (int i = 0; i <= n; ++i) {
+        std::cout<<lcp[i];
+    }
+    std::cout<<"\n";
+    int len=0,p=-1;
+    for (int i = 0; i <= n; ++i) {
+        if (lcp[rank[i]]>len){
+            len=lcp[rank[i]];
+            p=i;
+        }
+    }
+    if (p==-1) return "";
+    else return S.substr(p,len);
+}
+```
+
 这个对后缀数组的排序是用的标准库的排序方法，时间复杂度是`O(nlogn)`，比字符串大小是`O(n)`，故总的时间复杂度是`O(n^2logn)`，而 SA-IS 的时间复杂度是`O(n)`
 
 ## SA-IS 背景知识
