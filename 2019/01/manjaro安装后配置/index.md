@@ -5,7 +5,7 @@
 
 ```
 sudo pacman-mirrors -i -c China -m rank
-sudo pacman -Syy
+sudo pacman -Syu
 sudo pacman -S archlinux-keyring
 ```
 
@@ -24,14 +24,14 @@ Server = https://mirrors.tuna.tsinghua.edu.cn/archlinuxcn/$arch
 ## 更新系统
 
 ```
-sudo pacman -Syy
+sudo pacman -Syu
 ```
 
 ## 安装`archlinuxcn-keyring:`
 
 ```
 sudo pacman -S archlinuxcn-keyring
-sudo pacman -Syy
+sudo pacman -Syu
 ```
 
 ---
