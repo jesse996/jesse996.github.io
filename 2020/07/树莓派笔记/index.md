@@ -41,3 +41,6 @@ nmap -sn 192.168.1.0/24
 
 打开路由，看看已连接设备，叫 raspberrypi 的就是
 
+默认用户名：pi
+默认密码：raspberry
+
