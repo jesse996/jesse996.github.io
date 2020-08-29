@@ -105,12 +105,6 @@ sh -c "$(curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/mas
 sh -c "$(wget https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh -O -)"
 ```
 
-### 替换 zsh 的配置文件为 oh-my-zsh
-
-```
-cp ~/.oh-my-zsh/templates/zshrc.zsh-template ~/.zshrc
-```
-
 ### 安装插件
 
 #### 安装 zsh-autosuggestions
@@ -176,60 +170,6 @@ export NVM_LAZY_LOAD=true
 ```
 
 ---
-
-### 油酸乳
-
-##### 下载 脚本文件
-
-```
-wget http://www.djangoz.com/ssr#//github.com/the0demiurge/CharlesScripts/blob/master/charles/bin/ssr
-```
-
-[ssr](https://github.com/the0demiurge/CharlesScripts/blob/master/charles/bin/ssr)  是一个 shell 脚本
-
----
-
-##### 执行脚本
-
-```
- sudo mv ssr /usr/local/bin
- sudo chmod 766 /usr/local/bin/ssr
- ssr install
- ssr config
-```
-
-然后在系统设置里设置网络代理为手动
-
----
-
-### 开机自启动
-
-在`/usr/lib/systemd/system/`中加入`ssr.service`
-
-```
-[Unit]
-Description=AutoRunSSR
-
-[Service]
-Type=forking
-ExecStart=ssr start
-
-[Install]
-WantedBy=multi-user.target
-```
-
-然后输入命令
-
-```bash
-systemctl enable ssr.service
-systemctl start ssr.service
-```
-
-可以查看状态
-
-```
-systemctl status ssr.service
-```
 
 ### 设置 chrome 为默认浏览器:
 
