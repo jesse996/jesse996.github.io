@@ -60,10 +60,6 @@ mv 音乐 Music
 mv 桌面 Desktop
 ```
 
-### 设置 chrome 为默认浏览器:
-
-在设置中把 html 关联类型设置为用 chrome 打开
-
 ## 安装常用软件
 
 ### yay
