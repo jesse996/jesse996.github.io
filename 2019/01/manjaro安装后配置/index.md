@@ -190,6 +190,12 @@ archlinux-java status
 #sudo archlinux-java set java-14-jdk
 ```
 
+### 网易云音乐
+
+```bash
+yay -S iease-music
+```
+
 ## 美化
 
 ```bash
@@ -200,5 +206,5 @@ sudo pacman -S variety
 
 [KDE 美化和优化](https://zhuanlan.zhihu.com/p/100656626)
 
-[](https://zhuanlan.zhihu.com/p/89847601)
+[美化](https://zhuanlan.zhihu.com/p/89847601)
 
