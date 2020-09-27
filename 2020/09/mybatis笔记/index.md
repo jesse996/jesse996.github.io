@@ -222,9 +222,9 @@ MyBatis 还提供了另一个 EnumOrdinalTypeHandler 处理器，使用枚举的
 
 ## 对 java8 日期的支持
 
-在 pom.xml 怎加依赖：mybatis-typehanders-jsr310
+在 pom.xml 添加依赖：mybatis-typehanders-jsr310
 
-## 7.缓存配置
+## 第七章.缓存配置
 
 MyBatis 有一级缓存和二级缓存，一级缓存就是本地缓存，默认开启，且不能配置。
 
