@@ -12,7 +12,7 @@
 -   [ ] 加密与解密
 -   [ ] windows 程序设计
 -   [ ] C++反汇编与逆向分析技术揭秘
--   [ ] 精通 Spring（Java Web 开发与 Spring Boot 高级功能）
+-   [x] 精通 Spring（Java Web 开发与 Spring Boot 高级功能）
 -   [x] 架构修炼之道
 -   [x] MyBatis 从入门到精通
 -   [ ] 阿里巴巴 Java 开发手册
