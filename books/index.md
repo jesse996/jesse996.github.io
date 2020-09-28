@@ -13,6 +13,7 @@
 -   [ ] windows 程序设计
 -   [ ] C++反汇编与逆向分析技术揭秘
 -   [ ] 数据密集型应用系统设计
+-   [ ] MyBatis 3 源码深度解析
 -   [x] 精通 Spring（Java Web 开发与 Spring Boot 高级功能）
 -   [x] 架构修炼之道
 -   [x] MyBatis 从入门到精通
