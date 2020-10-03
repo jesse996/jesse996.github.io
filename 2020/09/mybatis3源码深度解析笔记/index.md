@@ -164,5 +164,20 @@ Connection 对象的`autoCommit`属性决定什么时候结束一个事务。启
 
 所有保存点在事务提交或回滚之后会自动释放。
 
-(未完待续...)
+## MyBatis 核心组件
+
+-   Configuration：用于描述 MyBatis 的主配置信息
+-   MappedStatement：用于描述 Mapper 中的 SQL 配置信息
+-   SqlSession：是 MyBatis 提供的面向用户的 API
+-   Executor：是 SQL 执行器
+-   StatementHandler：封装了对 JDBC Statement 对象的操作
+-   ParameterHandler：为参数占位符设置值。
+-   ResultSetHandler：将查询结果转换成 Java 对象
+-   TypeHandler：处理 Java 类型与 JDBC 类型之间的映射。
+
+## SqlSession 执行 Mapper 的过程
+
+MyBatis 中 Mapper 的配置分为两部分，分别为 Mapper 接口和 Mapper SQL 配置。MyBatis 通过动态代理的方式创建 Mapper 接口垫代理对象，MapperProxy 类中定义了 Mapper 方法执行时的拦截逻辑，通过 MapperProxyFactory 创建代理实例，MyBatis 启动时，会将 MapperProxyFactory 注册到 Configuration 对象中。另外，MyBatis 通过 MappedStatement 类描述 Mapper SQL 配置信息，框架启动时，会解析 MapperSQL 配置，将所有的 MappedStatement 对象注册到 Configuration 对象中。
+
+通过 Mapper 代理对象调用 Mapper 接口中定义的方法时，会执行 MapperProxy 类中的拦截逻辑，将 Mapper 方法的调用转换为调用 SqlSession 提供的 API 方法。在 SqlSession 的 API 方法中通过 Mapper 的 Id 找到对应的 MappedStatement 对象，获取对应的 SQL 信息，通过 StatementHandler 操作 JDBC 的 Statement 对象完成与数据库的交互，然后通过 ResultSetHandler 处理结果，将结果返回给调用者。
 
