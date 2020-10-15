@@ -146,3 +146,56 @@ with rollup 反映的是一种 OLAP 思想，就是说这个 group by 语句完�
 
 最好统一用小写。
 
+MySQL 有两种锁：共享读锁，独占写锁。
+
+在 5.7 及以前，用`select ... in share mode`获取共享锁，8.0 后改为`select for share`，兼容以前的。
+用`select for update`获取独占锁。如遇到锁等待，默认等 50s，可以在 update 后加两个选项：skip locked 和 nowait。
+
+innoDb 行锁分 3 种：
+
+-   record lock：对索引项加锁
+-   gap lock：对索引间的间隙加锁
+-   next-key lock：前两种的组合，对记录及前面的间隙加锁
+
+-   这意味着如果不通过索引检索数据，那么 innoDB 将对表中所有数据加锁，和锁表一样！！
+
+-   由于 MySQL 的行锁是针对索引加的锁，不是针对记录加的锁，所以虽然是访问不同的记录，但是如果是使用的相同的索引键，就会出现锁冲突。
+
+-   当表有多个索引的时候，不同的事务可以使用不同的索引锁定不同的行
+
+-   即便在条件中使用了索引字段，但是否使用索引来检索数据是由 MySQL 通过判断不同执行计划的代价来决定的。
+
+当使用范围条件检索数据，并请求共享或排他锁时，innoDB 会给符合条件的数据记录的索引项加锁，对于键值在条件范围内但并不存在的记录，叫做间隙，innoDB 也会对这个间隙加锁，这就是`next-key`锁。
+除了通过范围条件外，如果视同相等条件给一个不存在的记录加锁，innoDB 也会使用 next-key 锁。
+
+next-key 可以解决幻读。
+
+insert ... select 和 create table ... select 可能会阻止对源表的并发更新，MySQL 将这种 sql 称为不确定的 sql， 属于“Unsafe SQL”，不推荐使用。
+
+可以通过"select \* from source into outfile" 和"load data infile ..."语句来组合间接实现。或使用基于行的 BINLOG 格式和基于行数据的复制。
+
+### 关于死锁
+
+两个事务都需要获取对方持有的排他锁才能继续完成事务，这种循环锁等待就是典型的死锁。
+发生死锁后，innoDB 一般都能自动检测到，并使一个事务释放锁并回退。当涉及外部锁或表锁，innoDB 并不能完全自动检测到死锁，需要设置超时等待参数 innodb_lock_wait_timeout 来解决。
+
+通常来说，死锁都是应用设计的问题
+
+-   在应用中，如果不同的程序会并发读取多个表，应尽量约定以相同的顺序来访问表，可以大大降低死锁的概率。
+-   在程序以批量方式处理数据的时候，如果实现对数据排序，保证每个线程按固定的顺序来处理记录，也可以大大降低死锁的概率。
+-   在事务中，如果要更新记录，应直接申请排他锁，而不应先申请共享锁再申请排他锁
+
+用 `show innodb status` 分析死锁的原因
+
+innoDB 采用 redo log 机制来保证事务更新的一致性和持久性。
+
+当更新数据时，innoDB 内部的操作流程大致如下：
+
+1. 将数据读入 innoDB buffer pool，并对 相关记录加独占锁
+2. 将 undo 信息写入 undo 表空间的回滚段中
+3. 更改缓存页中的数据，并将更新记录写入 redo buffer 中
+4. 提交时，根据 innodb_flush_log_at_trx_commit 的设置，用不同的方式将 redo buffer 中的更新记录刷新到 innoDB rego log file 中，然后释放独占锁
+5. 最后，后台 IO 线程根据需要择机将缓存中更新的数据刷新到磁盘文件中
+
+set persist/set persist only 可以持久化参数设置，通过 reset persist 来清除某个配置
+
