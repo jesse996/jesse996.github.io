@@ -110,6 +110,7 @@ sh -c "$(curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/mas
 
 git clone https://github.com/zsh-users/zsh-autosuggestions ~/.oh-my-zsh/plugins/zsh-autosuggestions
 git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ~/.oh-my-zsh/plugins/zsh-syntax-highlighting
+git clone https://github.com/lukechilds/zsh-nvm ~/.oh-my-zsh/custom/plugins/zsh-nvm
 #git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ~/.oh-my-zsh/plugins/zsh-syntax-highlighting
 #sudo pacman -S autojump
 ```
@@ -124,9 +125,12 @@ plugins=(
   git
   zsh-syntax-highlighting
   zsh-autosuggestions
+  zsh-nvm
   #autojump
-  #zsh-nvm
 )
+export NVM_LAZY_LOAD=true
+export NVM_COMPLETION=true
+
 ```
 
 最后刷新
