@@ -393,6 +393,11 @@ yay -S noto-fonts-cjk ttf-dejavu
 -   Media player indicator 显示音乐播放器的状态
 -   Battery status  显示电池电量百分比
 -   Netspeed  在顶栏上显示网速
+-   **appindicator 托盘图标(tray icon)**
+
+```bash
+yay -S gnome-shell-extension-appindicator
+```
 
 ## 降级软件包
 
