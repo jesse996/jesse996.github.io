@@ -1,8 +1,6 @@
 # Arch安装
 
 
-**主要还是依据 arch wiki 来安装，这个只是作为一个参考**
-
 ### **验证启动模式（BIOS 还是 EFI）**
 
 要验证启动模式，请用下列命令列出  **[efivars](https://wiki.archlinux.org/index.php/Efivars)**  目录：
@@ -32,9 +30,43 @@
     -   静态 IP 地址: 按照  **[Network configuration#Static IP address](https://wiki.archlinux.org/index.php/Network_configuration#Static_IP_address)**  进行操作。
 -   用  **[ping](<https://en.wikipedia.org/wiki/ping_(networking_utility)>)**  检查网络连接:
 
+### WIFI 连接
+
+输入
+
+`iwctl`
+
+进入 iwd 模式，输入
+
+`device list`
+
+查看你的网卡名字，这里假设是 wlan0，输入
+
+`station wlan0 scan`
+
+检查扫描网络，输入
+
+`station wlan0 get-networks`
+
+查看网络名字，假设名字叫 BUPT-portal，输入
+
+`station wlan0 connect BUPT-portal`
+
+接着输入密码（如果有密码的话），输入
+
+`exit`
+
+退出 iwd 模式
+
+### 测试网络
+
 ```bash
-ping archlinux.org
+ping baidu.com
 ```
+
+使用 reflector 来获取速度最快的 6 个镜像，并将地址保存至/etc/pacman.d/mirrorlist
+
+`reflector -c China -a 6 --sort rate --save /etc/pacman.d/mirrorlist`
 
 ### **更新系统时间**
 
@@ -64,11 +96,6 @@ fdisk -l
 
 用 cfdisk 分区
 
-### **分区示例**
-
-UEFI：
-`/` 、 `swap` 、`/boot`
-
 ### **格式化分区**
 
 当分区建立好了，这些分区都需要使用适当的  **[文件系统](<https://wiki.archlinux.org/index.php/File_systems_(%E7%AE%80%E4%BD%93%E4%B8%AD%E6%96%87)>)**  进行格式化。举个例子，如果根分区在  `/dev/sdX1`  上并且要使用 Ext4 文件系统，运行：
@@ -77,7 +104,7 @@ UEFI：
  mkfs.ext4 /dev/sdX1
 ```
 
-如果创建了  **[交换分区](<https://wiki.archlinux.org/index.php/Swap_(%E7%AE%80%E4%BD%93%E4%B8%AD%E6%96%87)>)** (例如  `/dev/sdX2`)，请使用  **[mkswap(8)](https://jlk.fjfi.cvut.cz/arch/manpages/man/mkswap.8)**  将其初始化：
+如果创建了  **[交换分区](<https://wiki.archlinux.org/index.php/Swap_(%E7%AE%80%E4%BD%93%E4%B8%AD%E6%96%87)>)** (例如  `/dev/sda3`)，请使用  **[mkswap(8)](https://jlk.fjfi.cvut.cz/arch/manpages/man/mkswap.8)**  将其初始化：
 
 ```bash
  mkswap /dev/sdX2
@@ -90,27 +117,13 @@ UEFI：
 
 ```bash
 mount /dev/sdX1 /mnt
-#mkdir /mnt/boot  #如果没有就要先创建这个文件夹
+mkdir /mnt/boot
 mount /dev/sdX2 /mnt/boot
 ```
 
 然后使用  **[mkdir(1)](https://jlk.fjfi.cvut.cz/arch/manpages/man/mkdir.1)**  创建其他剩余的挂载点（比如  `/mnt/efi`）并挂载其相应的分区。
 
 稍后  **[genfstab(8)](https://jlk.fjfi.cvut.cz/arch/manpages/man/genfstab.8)**  将自动检测挂载的文件系统和交换空间。
-
-生成分区表：
-
-```bash
-genfstab -U /mnt >> /mnt/etc/fstab
-```
-
-由于这步比较重要，所以我们需要输出生成的文件来检查是否正确，执行以下命令：
-
-```bash
-cat /mnt/etc/fstab
-```
-
-应该有 3 个，`/`,`/boot`,`swap`
 
 ### **选择镜像**
 
@@ -135,6 +148,18 @@ pacstrap /mnt networkmanager vim
 ```
 
 networkmanager 用来联网，vim 用来编辑配置文件。只要能连上网，别的软件都可以晚点装，所以目前装这么多东西就足够了。
+
+生成分区表：
+
+```bash
+genfstab -U /mnt >> /mnt/etc/fstab
+```
+
+由于这步比较重要，所以我们需要输出生成的文件来检查是否正确，执行以下命令：
+
+```bash
+cat /mnt/etc/fstab
+```
 
 进入新系统：
 
@@ -188,7 +213,7 @@ pacman -S intel-ucode
 pacman -S amd-ucode *# 根据实际情况安装*
 ```
 
-## **安装`Bootloader`**
+### **安装`Bootloader`**
 
 这里我们安装最流行的`Grub2`。**（如果曾经装过`Linux`，记得删掉原来的`Grub`，否则不可能成功启动）**
 
@@ -305,6 +330,30 @@ nmtui #用这个图像连接网络
 sudo pacman -S alsa-utils pulseaudio-alsa pulseaudio
 ```
 
+## 添加用户
+
+连接上互联网以后，我们需要为自己创建一个普通用户账号，一直使用`root`不太好。`username`可以改成自己喜欢的用户名，`m`表示创建用户的家目录`~`，`G`表示把用户放进`wheel`这个组。
+
+```bash
+useradd -m -G wheel username
+```
+
+创建完用户以后，设置一下用户的密码：
+
+```bash
+passwd username
+```
+
+为了让普通用户能够暂时获得管理权限，我们需要安装`sudo`包：
+
+```bash
+pacman -S sudo
+```
+
+安装完毕以后，使用 vim 打开`/etc/sudoers`，找到`wheel ALL=(ALL) ALL`这一行取消注释，然后使用`:wq!`强制改写该文件，使得`wheel`这个组内的用户都可以使用`sudo`。
+
+使用`su username`（username 换成自己刚刚设置好的名字）换成普通用户登录系统，我们就可以正式开始使用 archlinux 系统了。
+
 ### **安装 Xorg**
 
 `Xorg`是`Linux`下的一个著名的开源图形服务，我们的桌面环境需要`Xorg`的支持。
@@ -312,10 +361,10 @@ sudo pacman -S alsa-utils pulseaudio-alsa pulseaudio
 执行如下命令安装`Xorg`及相关组件：
 
 ```bash
-sudo pacman -S xorg
+udo pacman -S xorg
 ```
 
-## **安装桌面环境**
+### **安装桌面环境**
 
 `Linux`下有很多著名的桌面环境如`Xfce`、`KDE(Plasma)`、`Gnome`、`Unity`、`Deepin`等等，它们的外观、操作、设计理念等各方面都有所不同， 在它们之间的比较与选择网上有很多的资料可以去查。
 
@@ -329,9 +378,8 @@ sudo pacman -S xorg
 
 ```bash
 sudo pacman -S plasma kde-applications packagekit-qt5
+#packagekit-qt5为了使discover工作正常
 ```
-
-packagekit-qt5 是为了让 Discover 工作正常
 
 ### **安装桌面管理器**
 
@@ -341,8 +389,9 @@ packagekit-qt5 是为了让 Discover 工作正常
 
 ### kde**安装 sddm**
 
+sddm 已经被包含进`plasma`中，无需另外安装
+
 ```bash
-sudo pacman -S sddm
 systemctl enable sddm
 ```
 
@@ -350,15 +399,14 @@ systemctl enable sddm
 
 ### gnome 安装 gdm
 
----
-
 同时你可能需要安装工具栏工具来显示网络设置图标（某些桌面环境已经装了，但是为了保险可以再装一下）：
 
 ```bash
-sudo pacman -S network-manager-applet
+#sudo pacman -S network-manager-applet
+现在不用下也有
 ```
 
-## 双系统和 win10 时间不一样：
+双系统和 win10 时间不一样：
 
 ```bash
 sudo timedatectl set-local-rtc true
@@ -393,9 +441,9 @@ yay -S noto-fonts-cjk ttf-dejavu
 -   Media player indicator 显示音乐播放器的状态
 -   Battery status  显示电池电量百分比
 -   Netspeed  在顶栏上显示网速
--   **appindicator 托盘图标(tray icon)**
 
 ```bash
+# tray icon 托盘图标
 yay -S gnome-shell-extension-appindicator
 ```
 
