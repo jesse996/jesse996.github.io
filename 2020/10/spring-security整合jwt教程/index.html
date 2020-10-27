@@ -1,0 +1,410 @@
+<!doctype html><html lang=zh-cn><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><meta name=robots content="noodp"><meta http-equiv=x-ua-compatible content="IE=edge, chrome=1"><title>Spring Security整合JWT教程 - Jesse's Blog</title><meta name=Description content="Jesse的博客"><meta property="og:title" content="Spring Security整合JWT教程"><meta property="og:description" content="大体思路： 登入： POST 用户名密码到 \login 请求到达 JwtAuthenticationFilter 中的 attemptAuthentication() 方法，获取 request 中的 POST 参数，包装成一个 UsernamePasswordAuthenticationToken 交付给 AuthenticationManager 的 authenticate() 方法进行鉴权。 AuthenticationManager 会从 CachingUserDetailsService 中查找用户信息，并且判"><meta property="og:type" content="article"><meta property="og:url" content="https://www.jesse233.top/2020/10/spring-security%E6%95%B4%E5%90%88jwt%E6%95%99%E7%A8%8B/"><meta property="og:image" content="https://www.jesse233.top/avatar.png"><meta property="article:published_time" content="2020-10-27T09:58:08+08:00"><meta property="article:modified_time" content="2020-10-27T09:58:08+08:00"><meta name=twitter:card content="summary_large_image"><meta name=twitter:image content="https://www.jesse233.top/avatar.png"><meta name=twitter:title content="Spring Security整合JWT教程"><meta name=twitter:description content="大体思路： 登入： POST 用户名密码到 \login 请求到达 JwtAuthenticationFilter 中的 attemptAuthentication() 方法，获取 request 中的 POST 参数，包装成一个 UsernamePasswordAuthenticationToken 交付给 AuthenticationManager 的 authenticate() 方法进行鉴权。 AuthenticationManager 会从 CachingUserDetailsService 中查找用户信息，并且判"><meta name=application-name content="LoveIt"><meta name=apple-mobile-web-app-title content="LoveIt"><meta name=theme-color content="#ffffff"><meta name=msapplication-TileColor content="#da532c"><link rel=icon href=/favicon.svg><link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png><link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5><link rel=manifest href=/site.webmanifest><link rel=canonical href=https://www.jesse233.top/2020/10/spring-security%E6%95%B4%E5%90%88jwt%E6%95%99%E7%A8%8B/><link rel=prev href=https://www.jesse233.top/2020/10/metaspolit5%E7%AC%94%E8%AE%B0/><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/normalize.css@8.0.1/normalize.min.css><link rel=stylesheet href=/css/style.min.css><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.13.0/css/all.min.css><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/animate.css@3.7.2/animate.min.css><meta name=baidu-site-verification content="yJZ8DYA9pA"><script type=application/ld+json>{"@context":"http://schema.org","@type":"BlogPosting","headline":"Spring Security整合JWT教程","inLanguage":"zh-CN","mainEntityOfPage":{"@type":"WebPage","@id":"https:\/\/www.jesse233.top\/2020\/10\/spring-security%E6%95%B4%E5%90%88jwt%E6%95%99%E7%A8%8B\/"},"genre":"posts","wordcount":2119,"url":"https:\/\/www.jesse233.top\/2020\/10\/spring-security%E6%95%B4%E5%90%88jwt%E6%95%99%E7%A8%8B\/","datePublished":"2020-10-27T09:58:08+08:00","dateModified":"2020-10-27T09:58:08+08:00","publisher":{"@type":"Organization","name":"宋志新"},"author":{"@type":"Person","name":"Jesse"},"description":""}</script></head><body header-desktop=fixed header-mobile=auto><script type=text/javascript>(window.localStorage&&localStorage.getItem('theme')?localStorage.getItem('theme')==='dark':('auto'==='auto'?window.matchMedia('(prefers-color-scheme: dark)').matches:'auto'==='dark'))&&document.body.setAttribute('theme','dark');</script><div id=mask></div><div class=wrapper><header class=desktop id=header-desktop><div class=header-wrapper><div class=header-title><a href=/ title="Jesse's Blog"><img class="lazyload logo" src=/svg/loading.min.svg data-src=/favicon.svg data-srcset="/favicon.svg, /favicon.svg 1.5x, /favicon.svg 2x" data-sizes=auto alt=/favicon.svg title=/favicon.svg>Jesse's Blog</a></div><div class=menu><div class=menu-inner><a class=menu-item href=/posts/>文章 </a><a class=menu-item href=/tags/>标签 </a><a class=menu-item href=/categories/>分类 </a><a class=menu-item href=/books>书单 </a><a class=menu-item href=/leetcode>LeetCode </a><a class=menu-item href=/about>关于 </a><span class="menu-item delimiter"></span><span class="menu-item search" id=search-desktop><input type=text placeholder=搜索文章标题或内容... id=search-input-desktop>
+<a href=javascript:void(0); class="search-button search-toggle" id=search-toggle-desktop title=搜索><i class="fas fa-search fa-fw"></i></a><a href=javascript:void(0); class="search-button search-clear" id=search-clear-desktop title=清空><i class="fas fa-times-circle fa-fw"></i></a><span class="search-button search-loading" id=search-loading-desktop><i class="fas fa-spinner fa-fw fa-spin"></i></span></span><a href=javascript:void(0); class="menu-item theme-switch" title=切换主题><i class="fas fa-adjust fa-fw"></i></a></div></div></div></header><header class=mobile id=header-mobile><div class=header-container><div class=header-wrapper><div class=header-title><a href=/ title="Jesse's Blog"><img class="lazyload logo" src=/svg/loading.min.svg data-src=/favicon.svg data-srcset="/favicon.svg, /favicon.svg 1.5x, /favicon.svg 2x" data-sizes=auto alt=/favicon.svg title=/favicon.svg>Jesse's Blog</a></div><div class=menu-toggle id=menu-toggle-mobile><span></span><span></span><span></span></div></div><div class=menu id=menu-mobile><div class=search-wrapper><div class="search mobile" id=search-mobile><input type=text placeholder=搜索文章标题或内容... id=search-input-mobile>
+<a href=javascript:void(0); class="search-button search-toggle" id=search-toggle-mobile title=搜索><i class="fas fa-search fa-fw"></i></a><a href=javascript:void(0); class="search-button search-clear" id=search-clear-mobile title=清空><i class="fas fa-times-circle fa-fw"></i></a><span class="search-button search-loading" id=search-loading-mobile><i class="fas fa-spinner fa-fw fa-spin"></i></span></div><a href=javascript:void(0); class=search-cancel id=search-cancel-mobile>取消</a></div><a class=menu-item href=/posts/>文章</a><a class=menu-item href=/tags/>标签</a><a class=menu-item href=/categories/>分类</a><a class=menu-item href=/books>书单</a><a class=menu-item href=/leetcode>LeetCode</a><a class=menu-item href=/about>关于</a><a href=javascript:void(0); class="menu-item theme-switch" title=切换主题>
+<i class="fas fa-adjust fa-fw"></i></a></div></div></header><div class="search-dropdown desktop"><div id=search-dropdown-desktop></div></div><div class="search-dropdown mobile"><div id=search-dropdown-mobile></div></div><main class=main><div class=container><div class=toc id=toc-auto><h2 class=toc-title>目录</h2><div class="toc-content always-active" id=toc-content-auto></div></div><article class="page single"><h1 class="single-title animated flipInX">Spring Security整合JWT教程</h1><div class=post-meta><div class=post-meta-line><span class=post-author><a href=https://github.com/jesse996 title=Author target=_blank rel="noopener noreffer author" class=author><i class="fas fa-user-circle fa-fw"></i>Jesse</a></span></div><div class=post-meta-line><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime=2020-10-27>2020-10-27</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;约 2119 字&nbsp;
+<i class="far fa-clock fa-fw"></i>&nbsp;预计阅读 5 分钟&nbsp;<span id=/2020/10/spring-security%E6%95%B4%E5%90%88jwt%E6%95%99%E7%A8%8B/ class=leancloud_visitors data-flag-title="Spring Security整合JWT教程">
+<i class="far fa-eye fa-fw"></i>&nbsp;<span class=leancloud-visitors-count></span>&nbsp;次阅读
+</span>&nbsp;</div></div><div class="details toc" id=toc-static kept><div class="details-summary toc-title"><span>目录</span>
+<span><i class="details-icon fas fa-angle-right"></i></span></div><div class="details-content toc-content" id=toc-content-static><nav id=TableOfContents><ul><li><ul><li><a href=#大体思路>大体思路：</a><ul><li><a href=#登入>登入：</a></li><li><a href=#请求鉴权>请求鉴权：</a></li></ul></li><li><a href=#jwt-的组成>JWT 的组成</a></li><li><a href=#jwt-实例>JWT 实例</a></li><li><a href=#jwt-实现认证和授权的原理>JWT 实现认证和授权的原理</a></li><li><a href=#pom-依赖>pom 依赖</a></li><li><a href=#使用>使用</a><ul><li><a href=#对称加密hmac>对称加密（HMAC）</a></li></ul></li><li><a href=#添加-springsecurity-的配置类>添加 SpringSecurity 的配置类</a></li></ul></li></ul></nav></div></div><div class=content id=content><h2 id=大体思路>大体思路：</h2><h3 id=登入>登入：</h3><ol><li>POST 用户名密码到 \login</li><li>请求到达 JwtAuthenticationFilter 中的 attemptAuthentication() 方法，获取 request 中的 POST 参数，包装成一个 UsernamePasswordAuthenticationToken 交付给 AuthenticationManager 的 authenticate() 方法进行鉴权。</li><li>AuthenticationManager 会从 CachingUserDetailsService 中查找用户信息，并且判断账号密码是否正确。</li><li>如果账号密码正确跳转到 JwtAuthenticationFilter 中的 successfulAuthentication() 方法，我们进行签名，生成 token 返回给用户。</li><li>账号密码错误则跳转到 JwtAuthenticationFilter 中的 unsuccessfulAuthentication() 方法，我们返回错误信息让用户重新登入。</li></ol><h3 id=请求鉴权>请求鉴权：</h3><p>请求鉴权的主要思路是我们会从请求中的 Authorization 字段拿取 token，如果不存在此字段的用户，Spring Security 会默认会用 AnonymousAuthenticationToken() 包装它，即代表匿名用户。</p><ol><li>任意请求发起</li><li>到达 JwtAuthorizationFilter 中的 doFilterInternal() 方法，进行鉴权。</li><li>如果鉴权成功我们把生成的 Authentication 用 SecurityContextHolder.getContext().setAuthentication() 放入 Security，即代表鉴权完成。此处如何鉴权由我们自己代码编写，后序会详细说明。</li></ol><h2 id=jwt-的组成>JWT 的组成</h2><ul><li><p>JWT token 的格式：<code>header.payload.signature</code></p></li><li><p>header 中用于存放签名的生成算法</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-bash data-lang=bash><span class=o>{</span><span class=s2>&#34;alg&#34;</span>: <span class=s2>&#34;HS512&#34;</span><span class=o>}</span>
+</code></pre></td></tr></table></div></div></li><li><p>payload 中用于存放用户名、token 的生成时间和过期时间</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-bash data-lang=bash><span class=o>{</span><span class=s2>&#34;sub&#34;</span>:<span class=s2>&#34;admin&#34;</span>,<span class=s2>&#34;created&#34;</span>:1489079981393,<span class=s2>&#34;exp&#34;</span>:1489684781<span class=o>}</span>
+</code></pre></td></tr></table></div></div></li><li><p>signature 为以 header 和 payload 生成的签名，一旦 header 和 payload 被篡改，验证将失败</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-bash data-lang=bash>//secret 为加密算法的密钥
+String <span class=nv>signature</span> <span class=o>=</span> HMACSHA512<span class=o>(</span>base64UrlEncode<span class=o>(</span>header<span class=o>)</span> + <span class=s2>&#34;.&#34;</span> +base64UrlEncode<span class=o>(</span>payload<span class=o>)</span>,secret<span class=o>)</span>
+</code></pre></td></tr></table></div></div></li></ul><h2 id=jwt-实例>JWT 实例</h2><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImNyZWF0ZWQiOjE1NTY3NzkxMjUzMDksImV4cCI6MTU1NzM4MzkyNX0.d-iki0193X0bBOETf2UN3r3PotNIEAV7mzIxxeI5IxFyzzkOZxS0PGfF_SK6wxCv2K8S0cZjMkv6b5bCqc0VBw
+
+</code></pre></td></tr></table></div></div><h2 id=jwt-实现认证和授权的原理>JWT 实现认证和授权的原理</h2><ul><li>用户调用登录接口，登录成功后获取到 JWT 的 token；</li><li>之后用户每次调用接口都在 http 的 header 中添加一个叫 Authorization 的头，值为 JWT 的 token；</li><li>后台程序通过对 Authorization 头中信息的解码及数字签名校验来获取其中的用户信息，从而实现认证和授权。</li></ul><h2 id=pom-依赖>pom 依赖</h2><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-xml data-lang=xml><span class=nt>&lt;dependency&gt;</span>
+    <span class=nt>&lt;groupId&gt;</span>com.nimbusds<span class=nt>&lt;/groupId&gt;</span>
+    <span class=nt>&lt;artifactId&gt;</span>nimbus-jose-jwt<span class=nt>&lt;/artifactId&gt;</span>
+    <span class=nt>&lt;version&gt;</span>9.1<span class=nt>&lt;/version&gt;</span>
+<span class=nt>&lt;/dependency&gt;</span>
+</code></pre></td></tr></table></div></div><h2 id=使用>使用</h2><p>接下来我们将介绍下 nimbus-jose-jwt 库的使用，主要使用对称加密（HMAC）和非对称加密（RSA）两种算法来生成和解析 JWT 令牌。</p><h3 id=对称加密hmac>对称加密（HMAC）</h3><ul><li>创建 JwtTokenServiceImpl 作为 JWT 处理的业务类，添加根据 HMAC 算法生成和解析 JWT 令牌的方法，可以发现 nimbus-jose-jwt 库操作 JWT 的 API 非常易于理解；</li></ul><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span><span class=lnt>31
+</span><span class=lnt>32
+</span><span class=lnt>33
+</span><span class=lnt>34
+</span><span class=lnt>35
+</span><span class=lnt>36
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-java data-lang=java><span class=nd>@Service</span>
+<span class=kd>public</span> <span class=kd>class</span> <span class=nc>JwtTokenServiceImpl</span> <span class=kd>implements</span> <span class=n>JwtTokenService</span> <span class=o>{</span>
+    <span class=nd>@Override</span>
+    <span class=kd>public</span> <span class=n>String</span> <span class=nf>generateTokenByHMAC</span><span class=o>(</span><span class=n>String</span> <span class=n>payloadStr</span><span class=o>,</span> <span class=n>String</span> <span class=n>secret</span><span class=o>)</span> <span class=kd>throws</span> <span class=n>JOSEException</span> <span class=o>{</span>
+        <span class=c1>//创建JWS头，设置签名算法和类型
+</span><span class=c1></span>        <span class=n>JWSHeader</span> <span class=n>jwsHeader</span> <span class=o>=</span> <span class=k>new</span> <span class=n>JWSHeader</span><span class=o>.</span><span class=na>Builder</span><span class=o>(</span><span class=n>JWSAlgorithm</span><span class=o>.</span><span class=na>HS256</span><span class=o>).</span>
+                <span class=n>type</span><span class=o>(</span><span class=n>JOSEObjectType</span><span class=o>.</span><span class=na>JWT</span><span class=o>)</span>
+                <span class=o>.</span><span class=na>build</span><span class=o>();</span>
+        <span class=c1>//将负载信息封装到Payload中
+</span><span class=c1></span>        <span class=n>Payload</span> <span class=n>payload</span> <span class=o>=</span> <span class=k>new</span> <span class=n>Payload</span><span class=o>(</span><span class=n>payloadStr</span><span class=o>);</span>
+        <span class=c1>//创建JWS对象
+</span><span class=c1></span>        <span class=n>JWSObject</span> <span class=n>jwsObject</span> <span class=o>=</span> <span class=k>new</span> <span class=n>JWSObject</span><span class=o>(</span><span class=n>jwsHeader</span><span class=o>,</span> <span class=n>payload</span><span class=o>);</span>
+        <span class=c1>//创建HMAC签名器
+</span><span class=c1></span>        <span class=n>JWSSigner</span> <span class=n>jwsSigner</span> <span class=o>=</span> <span class=k>new</span> <span class=n>MACSigner</span><span class=o>(</span><span class=n>secret</span><span class=o>);</span>
+        <span class=c1>//签名
+</span><span class=c1></span>        <span class=n>jwsObject</span><span class=o>.</span><span class=na>sign</span><span class=o>(</span><span class=n>jwsSigner</span><span class=o>);</span>
+        <span class=k>return</span> <span class=n>jwsObject</span><span class=o>.</span><span class=na>serialize</span><span class=o>();</span>
+    <span class=o>}</span>
+
+    <span class=nd>@Override</span>
+    <span class=kd>public</span> <span class=n>PayloadDto</span> <span class=nf>verifyTokenByHMAC</span><span class=o>(</span><span class=n>String</span> <span class=n>token</span><span class=o>,</span> <span class=n>String</span> <span class=n>secret</span><span class=o>)</span> <span class=kd>throws</span> <span class=n>ParseException</span><span class=o>,</span> <span class=n>JOSEException</span> <span class=o>{</span>
+        <span class=c1>//从token中解析JWS对象
+</span><span class=c1></span>        <span class=n>JWSObject</span> <span class=n>jwsObject</span> <span class=o>=</span> <span class=n>JWSObject</span><span class=o>.</span><span class=na>parse</span><span class=o>(</span><span class=n>token</span><span class=o>);</span>
+        <span class=c1>//创建HMAC验证器
+</span><span class=c1></span>        <span class=n>JWSVerifier</span> <span class=n>jwsVerifier</span> <span class=o>=</span> <span class=k>new</span> <span class=n>MACVerifier</span><span class=o>(</span><span class=n>secret</span><span class=o>);</span>
+        <span class=k>if</span> <span class=o>(!</span><span class=n>jwsObject</span><span class=o>.</span><span class=na>verify</span><span class=o>(</span><span class=n>jwsVerifier</span><span class=o>))</span> <span class=o>{</span>
+            <span class=k>throw</span> <span class=k>new</span> <span class=n>JwtInvalidException</span><span class=o>(</span><span class=s>&#34;token签名不合法！&#34;</span><span class=o>);</span>
+        <span class=o>}</span>
+        <span class=n>String</span> <span class=n>payload</span> <span class=o>=</span> <span class=n>jwsObject</span><span class=o>.</span><span class=na>getPayload</span><span class=o>().</span><span class=na>toString</span><span class=o>();</span>
+        <span class=n>PayloadDto</span> <span class=n>payloadDto</span> <span class=o>=</span> <span class=n>JSONUtil</span><span class=o>.</span><span class=na>toBean</span><span class=o>(</span><span class=n>payload</span><span class=o>,</span> <span class=n>PayloadDto</span><span class=o>.</span><span class=na>class</span><span class=o>);</span>
+        <span class=k>if</span> <span class=o>(</span><span class=n>payloadDto</span><span class=o>.</span><span class=na>getExp</span><span class=o>()</span> <span class=o>&lt;</span> <span class=k>new</span> <span class=n>Date</span><span class=o>().</span><span class=na>getTime</span><span class=o>())</span> <span class=o>{</span>
+            <span class=k>throw</span> <span class=k>new</span> <span class=n>JwtExpiredException</span><span class=o>(</span><span class=s>&#34;token已过期！&#34;</span><span class=o>);</span>
+        <span class=o>}</span>
+        <span class=k>return</span> <span class=n>payloadDto</span><span class=o>;</span>
+    <span class=o>}</span>
+<span class=o>}</span>
+</code></pre></td></tr></table></div></div><ul><li>创建 PayloadDto 实体类，用于封装 JWT 中存储的信息；</li></ul><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-java data-lang=java><span class=nd>@Data</span>
+<span class=nd>@EqualsAndHashCode</span><span class=o>(</span><span class=n>callSuper</span> <span class=o>=</span> <span class=kc>false</span><span class=o>)</span>
+<span class=nd>@Builder</span>
+<span class=kd>public</span> <span class=kd>class</span> <span class=nc>PayloadDto</span> <span class=o>{</span>
+    <span class=nd>@ApiModelProperty</span><span class=o>(</span><span class=s>&#34;主题&#34;</span><span class=o>)</span>
+    <span class=kd>private</span> <span class=n>String</span> <span class=n>sub</span><span class=o>;</span>
+    <span class=nd>@ApiModelProperty</span><span class=o>(</span><span class=s>&#34;签发时间&#34;</span><span class=o>)</span>
+    <span class=kd>private</span> <span class=n>Long</span> <span class=n>iat</span><span class=o>;</span>
+    <span class=nd>@ApiModelProperty</span><span class=o>(</span><span class=s>&#34;过期时间&#34;</span><span class=o>)</span>
+    <span class=kd>private</span> <span class=n>Long</span> <span class=n>exp</span><span class=o>;</span>
+    <span class=nd>@ApiModelProperty</span><span class=o>(</span><span class=s>&#34;JWT的ID&#34;</span><span class=o>)</span>
+    <span class=kd>private</span> <span class=n>String</span> <span class=n>jti</span><span class=o>;</span>
+    <span class=nd>@ApiModelProperty</span><span class=o>(</span><span class=s>&#34;用户名称&#34;</span><span class=o>)</span>
+    <span class=kd>private</span> <span class=n>String</span> <span class=n>username</span><span class=o>;</span>
+    <span class=nd>@ApiModelProperty</span><span class=o>(</span><span class=s>&#34;用户拥有的权限&#34;</span><span class=o>)</span>
+    <span class=kd>private</span> <span class=n>List</span><span class=o>&lt;</span><span class=n>String</span><span class=o>&gt;</span> <span class=n>authorities</span><span class=o>;</span>
+<span class=o>}</span>
+</code></pre></td></tr></table></div></div><ul><li>在 JwtTokenServiceImpl 类中添加获取默认的 PayloadDto 的方法，JWT 过期时间设置为 60min；</li></ul><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-java data-lang=java><span class=nd>@Service</span>
+<span class=kd>public</span> <span class=kd>class</span> <span class=nc>JwtTokenServiceImpl</span> <span class=kd>implements</span> <span class=n>JwtTokenService</span> <span class=o>{</span>
+    <span class=nd>@Override</span>
+    <span class=kd>public</span> <span class=n>PayloadDto</span> <span class=nf>getDefaultPayloadDto</span><span class=o>()</span> <span class=o>{</span>
+        <span class=n>Date</span> <span class=n>now</span> <span class=o>=</span> <span class=k>new</span> <span class=n>Date</span><span class=o>();</span>
+        <span class=n>Date</span> <span class=n>exp</span> <span class=o>=</span> <span class=n>DateUtil</span><span class=o>.</span><span class=na>offsetSecond</span><span class=o>(</span><span class=n>now</span><span class=o>,</span> <span class=n>60</span><span class=o>*</span><span class=n>60</span><span class=o>);</span>
+        <span class=k>return</span> <span class=n>PayloadDto</span><span class=o>.</span><span class=na>builder</span><span class=o>()</span>
+                <span class=o>.</span><span class=na>sub</span><span class=o>(</span><span class=s>&#34;macro&#34;</span><span class=o>)</span>
+                <span class=o>.</span><span class=na>iat</span><span class=o>(</span><span class=n>now</span><span class=o>.</span><span class=na>getTime</span><span class=o>())</span>
+                <span class=o>.</span><span class=na>exp</span><span class=o>(</span><span class=n>exp</span><span class=o>.</span><span class=na>getTime</span><span class=o>())</span>
+                <span class=o>.</span><span class=na>jti</span><span class=o>(</span><span class=n>UUID</span><span class=o>.</span><span class=na>randomUUID</span><span class=o>().</span><span class=na>toString</span><span class=o>())</span>
+                <span class=o>.</span><span class=na>username</span><span class=o>(</span><span class=s>&#34;macro&#34;</span><span class=o>)</span>
+                <span class=o>.</span><span class=na>authorities</span><span class=o>(</span><span class=n>CollUtil</span><span class=o>.</span><span class=na>toList</span><span class=o>(</span><span class=s>&#34;ADMIN&#34;</span><span class=o>))</span>
+                <span class=o>.</span><span class=na>build</span><span class=o>();</span>
+    <span class=o>}</span>
+<span class=o>}</span>
+</code></pre></td></tr></table></div></div><ul><li>创建 JwtTokenController 类，添加根据 HMAC 算法生成和解析 JWT 令牌的接口，由于 HMAC 算法需要长度至少为 32 个字节的秘钥，所以我们使用 MD5 加密下；</li></ul><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span><span class=lnt>31
+</span><span class=lnt>32
+</span><span class=lnt>33
+</span><span class=lnt>34
+</span><span class=lnt>35
+</span><span class=lnt>36
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-java data-lang=java><span class=nd>@Api</span><span class=o>(</span><span class=n>tags</span> <span class=o>=</span> <span class=s>&#34;JwtTokenController&#34;</span><span class=o>,</span> <span class=n>description</span> <span class=o>=</span> <span class=s>&#34;JWT令牌管理&#34;</span><span class=o>)</span>
+<span class=nd>@Controller</span>
+<span class=nd>@RequestMapping</span><span class=o>(</span><span class=s>&#34;/token&#34;</span><span class=o>)</span>
+<span class=kd>public</span> <span class=kd>class</span> <span class=nc>JwtTokenController</span> <span class=o>{</span>
+
+    <span class=nd>@Autowired</span>
+    <span class=kd>private</span> <span class=n>JwtTokenService</span> <span class=n>jwtTokenService</span><span class=o>;</span>
+
+    <span class=nd>@ApiOperation</span><span class=o>(</span><span class=s>&#34;使用对称加密（HMAC）算法生成token&#34;</span><span class=o>)</span>
+    <span class=nd>@RequestMapping</span><span class=o>(</span><span class=n>value</span> <span class=o>=</span> <span class=s>&#34;/hmac/generate&#34;</span><span class=o>,</span> <span class=n>method</span> <span class=o>=</span> <span class=n>RequestMethod</span><span class=o>.</span><span class=na>GET</span><span class=o>)</span>
+    <span class=nd>@ResponseBody</span>
+    <span class=kd>public</span> <span class=n>CommonResult</span> <span class=nf>generateTokenByHMAC</span><span class=o>()</span> <span class=o>{</span>
+        <span class=k>try</span> <span class=o>{</span>
+            <span class=n>PayloadDto</span> <span class=n>payloadDto</span> <span class=o>=</span> <span class=n>jwtTokenService</span><span class=o>.</span><span class=na>getDefaultPayloadDto</span><span class=o>();</span>
+            <span class=n>String</span> <span class=n>token</span> <span class=o>=</span> <span class=n>jwtTokenService</span><span class=o>.</span><span class=na>generateTokenByHMAC</span><span class=o>(</span><span class=n>JSONUtil</span><span class=o>.</span><span class=na>toJsonStr</span><span class=o>(</span><span class=n>payloadDto</span><span class=o>),</span> <span class=n>SecureUtil</span><span class=o>.</span><span class=na>md5</span><span class=o>(</span><span class=s>&#34;test&#34;</span><span class=o>));</span>
+            <span class=k>return</span> <span class=n>CommonResult</span><span class=o>.</span><span class=na>success</span><span class=o>(</span><span class=n>token</span><span class=o>);</span>
+        <span class=o>}</span> <span class=k>catch</span> <span class=o>(</span><span class=n>JOSEException</span> <span class=n>e</span><span class=o>)</span> <span class=o>{</span>
+            <span class=n>e</span><span class=o>.</span><span class=na>printStackTrace</span><span class=o>();</span>
+        <span class=o>}</span>
+        <span class=k>return</span> <span class=n>CommonResult</span><span class=o>.</span><span class=na>failed</span><span class=o>();</span>
+    <span class=o>}</span>
+
+    <span class=nd>@ApiOperation</span><span class=o>(</span><span class=s>&#34;使用对称加密（HMAC）算法验证token&#34;</span><span class=o>)</span>
+    <span class=nd>@RequestMapping</span><span class=o>(</span><span class=n>value</span> <span class=o>=</span> <span class=s>&#34;/hmac/verify&#34;</span><span class=o>,</span> <span class=n>method</span> <span class=o>=</span> <span class=n>RequestMethod</span><span class=o>.</span><span class=na>GET</span><span class=o>)</span>
+    <span class=nd>@ResponseBody</span>
+    <span class=kd>public</span> <span class=n>CommonResult</span> <span class=nf>verifyTokenByHMAC</span><span class=o>(</span><span class=n>String</span> <span class=n>token</span><span class=o>)</span> <span class=o>{</span>
+        <span class=k>try</span> <span class=o>{</span>
+            <span class=n>PayloadDto</span> <span class=n>payloadDto</span>  <span class=o>=</span> <span class=n>jwtTokenService</span><span class=o>.</span><span class=na>verifyTokenByHMAC</span><span class=o>(</span><span class=n>token</span><span class=o>,</span> <span class=n>SecureUtil</span><span class=o>.</span><span class=na>md5</span><span class=o>(</span><span class=s>&#34;test&#34;</span><span class=o>));</span>
+            <span class=k>return</span> <span class=n>CommonResult</span><span class=o>.</span><span class=na>success</span><span class=o>(</span><span class=n>payloadDto</span><span class=o>);</span>
+        <span class=o>}</span> <span class=k>catch</span> <span class=o>(</span><span class=n>ParseException</span> <span class=o>|</span> <span class=n>JOSEException</span> <span class=n>e</span><span class=o>)</span> <span class=o>{</span>
+            <span class=n>e</span><span class=o>.</span><span class=na>printStackTrace</span><span class=o>();</span>
+        <span class=o>}</span>
+        <span class=k>return</span> <span class=n>CommonResult</span><span class=o>.</span><span class=na>failed</span><span class=o>();</span>
+
+    <span class=o>}</span>
+<span class=o>}</span>
+</code></pre></td></tr></table></div></div><h2 id=添加-springsecurity-的配置类>添加 SpringSecurity 的配置类</h2><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span><span class=lnt>31
+</span><span class=lnt>32
+</span><span class=lnt>33
+</span><span class=lnt>34
+</span><span class=lnt>35
+</span><span class=lnt>36
+</span><span class=lnt>37
+</span><span class=lnt>38
+</span><span class=lnt>39
+</span><span class=lnt>40
+</span><span class=lnt>41
+</span><span class=lnt>42
+</span><span class=lnt>43
+</span><span class=lnt>44
+</span><span class=lnt>45
+</span><span class=lnt>46
+</span><span class=lnt>47
+</span><span class=lnt>48
+</span><span class=lnt>49
+</span><span class=lnt>50
+</span><span class=lnt>51
+</span><span class=lnt>52
+</span><span class=lnt>53
+</span><span class=lnt>54
+</span><span class=lnt>55
+</span><span class=lnt>56
+</span><span class=lnt>57
+</span><span class=lnt>58
+</span><span class=lnt>59
+</span><span class=lnt>60
+</span><span class=lnt>61
+</span><span class=lnt>62
+</span><span class=lnt>63
+</span><span class=lnt>64
+</span><span class=lnt>65
+</span><span class=lnt>66
+</span><span class=lnt>67
+</span><span class=lnt>68
+</span><span class=lnt>69
+</span><span class=lnt>70
+</span><span class=lnt>71
+</span><span class=lnt>72
+</span><span class=lnt>73
+</span><span class=lnt>74
+</span><span class=lnt>75
+</span><span class=lnt>76
+</span><span class=lnt>77
+</span><span class=lnt>78
+</span><span class=lnt>79
+</span><span class=lnt>80
+</span><span class=lnt>81
+</span><span class=lnt>82
+</span><span class=lnt>83
+</span><span class=lnt>84
+</span><span class=lnt>85
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-java data-lang=java><span class=nd>@Configuration</span>
+<span class=nd>@EnableWebSecurity</span>
+<span class=nd>@EnableGlobalMethodSecurity</span><span class=o>(</span><span class=n>prePostEnabled</span><span class=o>=</span><span class=kc>true</span><span class=o>)</span>
+<span class=kd>public</span> <span class=kd>class</span> <span class=nc>SecurityConfig</span> <span class=kd>extends</span> <span class=n>WebSecurityConfigurerAdapter</span> <span class=o>{</span>
+    <span class=nd>@Autowired</span>
+    <span class=kd>private</span> <span class=n>UmsAdminService</span> <span class=n>adminService</span><span class=o>;</span>
+    <span class=nd>@Autowired</span>
+    <span class=kd>private</span> <span class=n>RestfulAccessDeniedHandler</span> <span class=n>restfulAccessDeniedHandler</span><span class=o>;</span>
+    <span class=nd>@Autowired</span>
+    <span class=kd>private</span> <span class=n>RestAuthenticationEntryPoint</span> <span class=n>restAuthenticationEntryPoint</span><span class=o>;</span>
+
+    <span class=nd>@Override</span>
+    <span class=kd>protected</span> <span class=kt>void</span> <span class=nf>configure</span><span class=o>(</span><span class=n>HttpSecurity</span> <span class=n>httpSecurity</span><span class=o>)</span> <span class=kd>throws</span> <span class=n>Exception</span> <span class=o>{</span>
+        <span class=n>httpSecurity</span><span class=o>.</span><span class=na>csrf</span><span class=o>()</span><span class=c1>// 由于使用的是JWT，我们这里不需要csrf
+</span><span class=c1></span>                <span class=o>.</span><span class=na>disable</span><span class=o>()</span>
+                <span class=o>.</span><span class=na>sessionManagement</span><span class=o>()</span><span class=c1>// 基于token，所以不需要session
+</span><span class=c1></span>                <span class=o>.</span><span class=na>sessionCreationPolicy</span><span class=o>(</span><span class=n>SessionCreationPolicy</span><span class=o>.</span><span class=na>STATELESS</span><span class=o>)</span>
+                <span class=o>.</span><span class=na>and</span><span class=o>()</span>
+                <span class=o>.</span><span class=na>authorizeRequests</span><span class=o>()</span>
+                <span class=o>.</span><span class=na>antMatchers</span><span class=o>(</span><span class=n>HttpMethod</span><span class=o>.</span><span class=na>GET</span><span class=o>,</span> <span class=c1>// 允许对于网站静态资源的无授权访问
+</span><span class=c1></span>                        <span class=s>&#34;/&#34;</span><span class=o>,</span>
+                        <span class=s>&#34;/*.html&#34;</span><span class=o>,</span>
+                        <span class=s>&#34;/favicon.ico&#34;</span><span class=o>,</span>
+                        <span class=s>&#34;/**/*.html&#34;</span><span class=o>,</span>
+                        <span class=s>&#34;/**/*.css&#34;</span><span class=o>,</span>
+                        <span class=s>&#34;/**/*.js&#34;</span><span class=o>,</span>
+                        <span class=s>&#34;/swagger-resources/**&#34;</span><span class=o>,</span>
+                        <span class=s>&#34;/v2/api-docs/**&#34;</span>
+                <span class=o>)</span>
+                <span class=o>.</span><span class=na>permitAll</span><span class=o>()</span>
+                <span class=o>.</span><span class=na>antMatchers</span><span class=o>(</span><span class=s>&#34;/admin/login&#34;</span><span class=o>,</span> <span class=s>&#34;/admin/register&#34;</span><span class=o>)</span><span class=c1>// 对登录注册要允许匿名访问
+</span><span class=c1></span>                <span class=o>.</span><span class=na>permitAll</span><span class=o>()</span>
+                <span class=o>.</span><span class=na>antMatchers</span><span class=o>(</span><span class=n>HttpMethod</span><span class=o>.</span><span class=na>OPTIONS</span><span class=o>)</span><span class=c1>//跨域请求会先进行一次options请求
+</span><span class=c1></span>                <span class=o>.</span><span class=na>permitAll</span><span class=o>()</span>
+<span class=c1>//                .antMatchers(&#34;/**&#34;)//测试时全部运行访问
+</span><span class=c1>//                .permitAll()
+</span><span class=c1></span>                <span class=o>.</span><span class=na>anyRequest</span><span class=o>()</span><span class=c1>// 除上面外的所有请求全部需要鉴权认证
+</span><span class=c1></span>                <span class=o>.</span><span class=na>authenticated</span><span class=o>();</span>
+        <span class=c1>// 禁用缓存
+</span><span class=c1></span>        <span class=n>httpSecurity</span><span class=o>.</span><span class=na>headers</span><span class=o>().</span><span class=na>cacheControl</span><span class=o>();</span>
+        <span class=c1>// 添加JWT filter
+</span><span class=c1></span>        <span class=n>httpSecurity</span><span class=o>.</span><span class=na>addFilterBefore</span><span class=o>(</span><span class=n>jwtAuthenticationTokenFilter</span><span class=o>(),</span> <span class=n>UsernamePasswordAuthenticationFilter</span><span class=o>.</span><span class=na>class</span><span class=o>);</span>
+        <span class=c1>//添加自定义未授权和未登录结果返回
+</span><span class=c1></span>        <span class=n>httpSecurity</span><span class=o>.</span><span class=na>exceptionHandling</span><span class=o>()</span>
+                <span class=o>.</span><span class=na>accessDeniedHandler</span><span class=o>(</span><span class=n>restfulAccessDeniedHandler</span><span class=o>)</span>
+                <span class=o>.</span><span class=na>authenticationEntryPoint</span><span class=o>(</span><span class=n>restAuthenticationEntryPoint</span><span class=o>);</span>
+    <span class=o>}</span>
+
+    <span class=nd>@Override</span>
+    <span class=kd>protected</span> <span class=kt>void</span> <span class=nf>configure</span><span class=o>(</span><span class=n>AuthenticationManagerBuilder</span> <span class=n>auth</span><span class=o>)</span> <span class=kd>throws</span> <span class=n>Exception</span> <span class=o>{</span>
+        <span class=n>auth</span><span class=o>.</span><span class=na>userDetailsService</span><span class=o>(</span><span class=n>userDetailsService</span><span class=o>())</span>
+                <span class=o>.</span><span class=na>passwordEncoder</span><span class=o>(</span><span class=n>passwordEncoder</span><span class=o>());</span>
+    <span class=o>}</span>
+
+    <span class=nd>@Bean</span>
+    <span class=kd>public</span> <span class=n>PasswordEncoder</span> <span class=nf>passwordEncoder</span><span class=o>()</span> <span class=o>{</span>
+        <span class=k>return</span> <span class=k>new</span> <span class=n>BCryptPasswordEncoder</span><span class=o>();</span>
+    <span class=o>}</span>
+
+    <span class=nd>@Bean</span>
+    <span class=kd>public</span> <span class=n>UserDetailsService</span> <span class=nf>userDetailsService</span><span class=o>()</span> <span class=o>{</span>
+        <span class=c1>//获取登录用户信息
+</span><span class=c1></span>        <span class=c1>//这里返回了一个实现了UserDetailsService接口的匿名类
+</span><span class=c1></span>        <span class=k>return</span> <span class=n>username</span> <span class=o>-&gt;</span> <span class=o>{</span>
+            <span class=n>UmsAdmin</span> <span class=n>admin</span> <span class=o>=</span> <span class=n>adminService</span><span class=o>.</span><span class=na>getAdminByUsername</span><span class=o>(</span><span class=n>username</span><span class=o>);</span>
+            <span class=k>if</span> <span class=o>(</span><span class=n>admin</span> <span class=o>!=</span> <span class=kc>null</span><span class=o>)</span> <span class=o>{</span>
+                <span class=n>List</span><span class=o>&lt;</span><span class=n>UmsPermission</span><span class=o>&gt;</span> <span class=n>permissionList</span> <span class=o>=</span> <span class=n>adminService</span><span class=o>.</span><span class=na>getPermissionList</span><span class=o>(</span><span class=n>admin</span><span class=o>.</span><span class=na>getId</span><span class=o>());</span>
+                <span class=k>return</span> <span class=k>new</span> <span class=n>AdminUserDetails</span><span class=o>(</span><span class=n>admin</span><span class=o>,</span><span class=n>permissionList</span><span class=o>);</span>
+            <span class=o>}</span>
+            <span class=k>throw</span> <span class=k>new</span> <span class=n>UsernameNotFoundException</span><span class=o>(</span><span class=s>&#34;用户名或密码错误&#34;</span><span class=o>);</span>
+        <span class=o>};</span>
+    <span class=o>}</span>
+
+    <span class=nd>@Bean</span>
+    <span class=kd>public</span> <span class=n>JwtAuthenticationTokenFilter</span> <span class=nf>jwtAuthenticationTokenFilter</span><span class=o>(){</span>
+        <span class=k>return</span> <span class=k>new</span> <span class=n>JwtAuthenticationTokenFilter</span><span class=o>();</span>
+    <span class=o>}</span>
+
+    <span class=nd>@Bean</span>
+    <span class=nd>@Override</span>
+    <span class=kd>public</span> <span class=n>AuthenticationManager</span> <span class=nf>authenticationManagerBean</span><span class=o>()</span> <span class=kd>throws</span> <span class=n>Exception</span> <span class=o>{</span>
+        <span class=k>return</span> <span class=kd>super</span><span class=o>.</span><span class=na>authenticationManagerBean</span><span class=o>();</span>
+    <span class=o>}</span>
+
+<span class=o>}</span>
+</code></pre></td></tr></table></div></div></div><div class=post-footer id=post-footer><div class=post-info><div class=post-info-line><div class=post-info-mod><span>更新于 2020-10-27</span></div><div class=post-info-license></div></div><div class=post-info-line><div class=post-info-md><span><a class=link-to-markdown href=/2020/10/spring-security%E6%95%B4%E5%90%88jwt%E6%95%99%E7%A8%8B/index.md target=_blank>阅读原始文档</a></span></div><div class=post-info-share><span><a href=javascript:void(0); title="分享到 Twitter" data-sharer=twitter data-url=https://www.jesse233.top/2020/10/spring-security%E6%95%B4%E5%90%88jwt%E6%95%99%E7%A8%8B/ data-title="Spring Security整合JWT教程"><i class="fab fa-twitter fa-fw"></i></a><a href=javascript:void(0); title="分享到 Facebook" data-sharer=facebook data-url=https://www.jesse233.top/2020/10/spring-security%E6%95%B4%E5%90%88jwt%E6%95%99%E7%A8%8B/><i class="fab fa-facebook-square fa-fw"></i></a><a href=javascript:void(0); title="分享到 WhatsApp" data-sharer=whatsapp data-url=https://www.jesse233.top/2020/10/spring-security%E6%95%B4%E5%90%88jwt%E6%95%99%E7%A8%8B/ data-title="Spring Security整合JWT教程" data-web><i class="fab fa-whatsapp fa-fw"></i></a><a href=javascript:void(0); title="分享到 Line" data-sharer=line data-url=https://www.jesse233.top/2020/10/spring-security%E6%95%B4%E5%90%88jwt%E6%95%99%E7%A8%8B/ data-title="Spring Security整合JWT教程"><i data-svg-src=https://cdn.jsdelivr.net/npm/simple-icons@2.14.0/icons/line.svg></i></a><a href=javascript:void(0); title="分享到 微博" data-sharer=weibo data-url=https://www.jesse233.top/2020/10/spring-security%E6%95%B4%E5%90%88jwt%E6%95%99%E7%A8%8B/ data-title="Spring Security整合JWT教程"><i class="fab fa-weibo fa-fw"></i></a><a href=javascript:void(0); title="分享到 Myspace" data-sharer=myspace data-url=https://www.jesse233.top/2020/10/spring-security%E6%95%B4%E5%90%88jwt%E6%95%99%E7%A8%8B/ data-title="Spring Security整合JWT教程" data-description><i data-svg-src=https://cdn.jsdelivr.net/npm/simple-icons@2.14.0/icons/myspace.svg></i></a><a href=javascript:void(0); title="分享到 Blogger" data-sharer=blogger data-url=https://www.jesse233.top/2020/10/spring-security%E6%95%B4%E5%90%88jwt%E6%95%99%E7%A8%8B/ data-title="Spring Security整合JWT教程" data-description><i class="fab fa-blogger fa-fw"></i></a><a href=javascript:void(0); title="分享到 Evernote" data-sharer=evernote data-url=https://www.jesse233.top/2020/10/spring-security%E6%95%B4%E5%90%88jwt%E6%95%99%E7%A8%8B/ data-title="Spring Security整合JWT教程"><i class="fab fa-evernote fa-fw"></i></a></span></div></div></div><div class=post-info-more><section class=post-tags></section><section><span><a href=javascript:void(0); onclick=window.history.back();>返回</a></span>&nbsp;|&nbsp;<span><a href=/>主页</a></span></section></div><div class=post-nav><a href=/2020/10/metaspolit5%E7%AC%94%E8%AE%B0/ class=prev rel=prev title=Metaspolit5笔记><i class="fas fa-angle-left fa-fw"></i>Metaspolit5笔记</a></div></div><div id=comments><div id=valine class=comment></div><noscript>Please enable JavaScript to view the comments powered by <a href=https://valine.js.org/>Valine</a>.</noscript></div></article></div></main><footer class=footer><div class=footer-container><div class=footer-line>由 <a href=https://gohugo.io/ target=_blank rel="noopener noreffer" title="Hugo 0.76.5">Hugo</a> 强力驱动 | 主题 - <a href=https://github.com/dillonzq/LoveIt target=_blank rel="noopener noreffer" title="LoveIt 0.2.10"><i class="far fa-kiss-wink-heart fa-fw"></i>LoveIt</a></div><div class=footer-line><i class="far fa-copyright fa-fw"></i><span itemprop=copyrightYear>2020</span><span class=author itemprop=copyrightHolder>&nbsp;<a href=https://github.com/jesse996 target=_blank>Jesse</a></span><span class=icp-splitter>&nbsp;|&nbsp;</span><br class=icp-br><span class=icp>鄂ICP备20000568号</span></div></div></footer></div><div id=fixed-buttons><a href=# id=back-to-top class=fixed-button title=回到顶部><i class="fas fa-arrow-up fa-fw"></i></a><a href=# id=view-comments class=fixed-button title=查看评论><i class="fas fa-comment fa-fw"></i></a></div><link rel=stylesheet href=/lib/valine/valine.min.css><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/lightgallery.js@1.2.0/dist/css/lightgallery.min.css><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/katex.min.css><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/contrib/copy-tex.min.css><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.css><script type=text/javascript src=https://cdn.jsdelivr.net/npm/valine@1.4.14/dist/Valine.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/smooth-scroll@16.1.3/dist/smooth-scroll.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/autocomplete.js@0.37.1/dist/autocomplete.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lunr@2.3.8/lunr.min.js></script><script type=text/javascript src=/lib/lunr/lunr.stemmer.support.min.js></script><script type=text/javascript src=/lib/lunr/lunr.zh.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lazysizes@5.2.2/lazysizes.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lightgallery.js@1.2.0/dist/js/lightgallery.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lg-thumbnail.js@1.2.0/dist/lg-thumbnail.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lg-zoom.js@1.2.0/dist/lg-zoom.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/sharer.js@0.4.0/sharer.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/katex.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/contrib/auto-render.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/contrib/copy-tex.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/contrib/mhchem.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.js></script><script type=text/javascript src=/baidu.js></script><script type=text/javascript>window.config={"code":{"copyTitle":"复制到剪贴板","maxShownLines":30},"comment":{"valine":{"appId":"INI3WoInvuBqDhbYssM5bN7F-gzGzoHsz","appKey":"JMKzYaRNR5ck0aapOYkC8yHS","avatar":"mp","el":"#valine","emojiCDN":"https://cdn.jsdelivr.net/npm/emoji-datasource-google@5.0.1/img/google/64/","emojiMaps":{"100":"1f4af.png","alien":"1f47d.png","anger":"1f4a2.png","angry":"1f620.png","anguished":"1f627.png","astonished":"1f632.png","black_heart":"1f5a4.png","blue_heart":"1f499.png","blush":"1f60a.png","bomb":"1f4a3.png","boom":"1f4a5.png","broken_heart":"1f494.png","brown_heart":"1f90e.png","clown_face":"1f921.png","cold_face":"1f976.png","cold_sweat":"1f630.png","confounded":"1f616.png","confused":"1f615.png","cry":"1f622.png","crying_cat_face":"1f63f.png","cupid":"1f498.png","dash":"1f4a8.png","disappointed":"1f61e.png","disappointed_relieved":"1f625.png","dizzy":"1f4ab.png","dizzy_face":"1f635.png","drooling_face":"1f924.png","exploding_head":"1f92f.png","expressionless":"1f611.png","face_vomiting":"1f92e.png","face_with_cowboy_hat":"1f920.png","face_with_hand_over_mouth":"1f92d.png","face_with_head_bandage":"1f915.png","face_with_monocle":"1f9d0.png","face_with_raised_eyebrow":"1f928.png","face_with_rolling_eyes":"1f644.png","face_with_symbols_on_mouth":"1f92c.png","face_with_thermometer":"1f912.png","fearful":"1f628.png","flushed":"1f633.png","frowning":"1f626.png","ghost":"1f47b.png","gift_heart":"1f49d.png","green_heart":"1f49a.png","grimacing":"1f62c.png","grin":"1f601.png","grinning":"1f600.png","hankey":"1f4a9.png","hear_no_evil":"1f649.png","heart":"2764-fe0f.png","heart_decoration":"1f49f.png","heart_eyes":"1f60d.png","heart_eyes_cat":"1f63b.png","heartbeat":"1f493.png","heartpulse":"1f497.png","heavy_heart_exclamation_mark_ornament":"2763-fe0f.png","hole":"1f573-fe0f.png","hot_face":"1f975.png","hugging_face":"1f917.png","hushed":"1f62f.png","imp":"1f47f.png","innocent":"1f607.png","japanese_goblin":"1f47a.png","japanese_ogre":"1f479.png","joy":"1f602.png","joy_cat":"1f639.png","kiss":"1f48b.png","kissing":"1f617.png","kissing_cat":"1f63d.png","kissing_closed_eyes":"1f61a.png","kissing_heart":"1f618.png","kissing_smiling_eyes":"1f619.png","laughing":"1f606.png","left_speech_bubble":"1f5e8-fe0f.png","love_letter":"1f48c.png","lying_face":"1f925.png","mask":"1f637.png","money_mouth_face":"1f911.png","nauseated_face":"1f922.png","nerd_face":"1f913.png","neutral_face":"1f610.png","no_mouth":"1f636.png","open_mouth":"1f62e.png","orange_heart":"1f9e1.png","partying_face":"1f973.png","pensive":"1f614.png","persevere":"1f623.png","pleading_face":"1f97a.png","pouting_cat":"1f63e.png","purple_heart":"1f49c.png","rage":"1f621.png","relaxed":"263a-fe0f.png","relieved":"1f60c.png","revolving_hearts":"1f49e.png","right_anger_bubble":"1f5ef-fe0f.png","robot_face":"1f916.png","rolling_on_the_floor_laughing":"1f923.png","scream":"1f631.png","scream_cat":"1f640.png","see_no_evil":"1f648.png","shushing_face":"1f92b.png","skull":"1f480.png","skull_and_crossbones":"2620-fe0f.png","sleeping":"1f634.png","sleepy":"1f62a.png","slightly_frowning_face":"1f641.png","slightly_smiling_face":"1f642.png","smile":"1f604.png","smile_cat":"1f638.png","smiley":"1f603.png","smiley_cat":"1f63a.png","smiling_face_with_3_hearts":"1f970.png","smiling_imp":"1f608.png","smirk":"1f60f.png","smirk_cat":"1f63c.png","sneezing_face":"1f927.png","sob":"1f62d.png","space_invader":"1f47e.png","sparkling_heart":"1f496.png","speak_no_evil":"1f64a.png","speech_balloon":"1f4ac.png","star-struck":"1f929.png","stuck_out_tongue":"1f61b.png","stuck_out_tongue_closed_eyes":"1f61d.png","stuck_out_tongue_winking_eye":"1f61c.png","sunglasses":"1f60e.png","sweat":"1f613.png","sweat_drops":"1f4a6.png","sweat_smile":"1f605.png","thinking_face":"1f914.png","thought_balloon":"1f4ad.png","tired_face":"1f62b.png","triumph":"1f624.png","two_hearts":"1f495.png","unamused":"1f612.png","upside_down_face":"1f643.png","weary":"1f629.png","white_frowning_face":"2639-fe0f.png","white_heart":"1f90d.png","wink":"1f609.png","woozy_face":"1f974.png","worried":"1f61f.png","yawning_face":"1f971.png","yellow_heart":"1f49b.png","yum":"1f60b.png","zany_face":"1f92a.png","zipper_mouth_face":"1f910.png","zzz":"1f4a4.png"},"enableQQ":true,"highlight":true,"lang":"zh-cn","pageSize":10,"placeholder":"你的评论 ...","recordIP":true,"visitor":true}},"cookieconsent":{"content":{"dismiss":"同意","link":"了解更多","message":"本网站使用 Cookies 来改善您的浏览体验."},"enable":true,"palette":{"button":{"background":"#f0f0f0"},"popup":{"background":"#1aa3ff"}},"theme":"edgeless"},"lightGallery":{"actualSize":false,"exThumbImage":"data-thumbnail","hideBarsDelay":2000,"selector":".lightgallery","speed":400,"thumbContHeight":80,"thumbWidth":80,"thumbnail":true},"math":{"delimiters":[{"display":true,"left":"$$","right":"$$"},{"display":true,"left":"\\[","right":"\\]"},{"display":false,"left":"$","right":"$"},{"display":false,"left":"\\(","right":"\\)"}],"strict":false},"search":{"highlightTag":"em","lunrIndexURL":"/index.json","lunrLanguageCode":"zh","lunrSegmentitURL":"/lib/lunr/lunr.segmentit.js","maxResultLength":10,"noResultsFound":"没有找到结果","snippetLength":50,"type":"lunr"}};</script><script type=text/javascript src=/js/theme.min.js></script><script type=text/javascript>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-97TKQKDH9W');</script><script type=text/javascript src="https://www.googletagmanager.com/gtag/js?id=G-97TKQKDH9W" async></script></body></html>

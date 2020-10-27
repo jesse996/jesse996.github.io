@@ -281,3 +281,20 @@ MyBatis 的二级缓存是和命名空间绑定的，通常每一个 Mapper 映�
 
 pom.xml 中<dependency>中的<scope>设置为 provided 代表不会将这个 jar 包打包到项目中
 
+### Selective
+
+```java
+updateByPrimaryKey
+ //对注入的字段全部更新（不判断是否为Null）
+
+updateByPrimaryKeySelective
+//会对字段进行判断再更新(如果为Null就忽略更新)
+```
+
+insert 和 insertSelective 和上面类似
+
+-   insert 就把所有值插入,但是要注意加入数据库字段有 default,default 是不会起作用的
+-   insertSelective 不会忽略 default
+
+[Mybatis 一对多、多对一处理](https://juejin.im/post/6844904110135705607)
+
