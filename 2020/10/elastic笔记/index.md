@@ -317,3 +317,102 @@ IK
     -   phrase：使用整个文本内容做提示
     -   completion 提示器：同于输入提示和自动补全。需要提示词产生的字段为 completion 类型
 
+---
+
+# 相关性评分与组合查询
+
+## 相关性评分
+
+### 相关度模型
+
+-   布尔模型
+-   向量空间模型
+-   概率模型
+-   语言模型
+
+### TF/IDF
+
+-   TF：term frequency,词频。
+-   IDF：invert document frequency,逆向文档频率，指词项在所有文档中出现的次数。
+
+TF 越高，相关度越高，IDF 越高，相关度越低。
+
+### BM25
+
+被认为是当今最先进的相关度算法之一。
+
+### 相关度解释
+
+相关度算法可通过 text 和 keyword 类型字段的 similarity 参数修改，也就是说相关度算法不针对整个文档而是针对单个字段，默认是 BM25。
+
+### 相关度权重
+
+-   boost 参数
+    默认是 1，在检索时设置
+-   indices_boost 参数
+    可调整多索引查询条件时每个索引的权重
+
+## 组合查询与相关度组合
+
+### bool 组合查询
+
+字句类型：
+
+-   must：影响相关度
+-   filter：不影响
+-   should：影响
+-   must_not：不影响
+
+当 should 字句与 must 字句或 filter 字句同时出现时，should 字句不会过滤结果。
+
+### dis_max 组合查询
+
+在计算相关度值时，会在子查询中取最大相关性值为最终相关度分值结果，而忽略其他子查询的相关性得分。
+通过 queries 参数接受对象数组，数组元素可以是前面讲解的叶子查询。
+可以用 tie_breaker 参数设置其他字段参与相关度运算的系数。
+
+### constant_score 查询
+
+返回结果的相关度为固定值，由 boost 参数设置。
+match_all 可以当成一个 boost 为 1 的 constant_score 查询。
+
+### boosting 查询
+
+通过 positive 字句设置满足条件的文档，类似 boost 查询中的 must 字句。通过 negative 字句设置需要排除文档的条件，类似 boost 的 must_not 字句。
+不同的是，不会将满足 negative 条件的文档从返回结果中排除，而只是会拉低他们的相关性分值。
+参数 negative_boost 设置一个系数，当满足 negative 时相关度会乘这个系数，所以系数要大于 0 小于 1。
+
+### function_score 查询
+
+通过为查询条件定义不同的打分函数实现自定义打分，使用 functions 参数设置打分函数。
+打分函数如果有多个，最后打分函数的值由 score_mode 的值来决定。
+
+打分函数运算的相关性评分会与 query 参数中查询条件的相关度组合起来，组合的方式是通过 boost_mode 参数指定。
+
+当只有一个打分函数值，可以直接使用打分函数名称做设置，取代 functions。
+几个内置的打分函数：
+
+-   weight：固定值
+-   random_score：0-1 之间的随机数
+-   script_score：通过脚本得到值，非负
+-   field_value_factor：加入某一字段作为干扰因子。
+-   衰减函数 ：
+    -   gauss（高斯）
+    -   linear（线性）
+    -   exp（指数函数）
+
+### 相关度组合
+
+query_string 和 multi_match 查询，由于对多个字段设置查询条件，所以需要考虑组合多个相关度的问题。
+type 参数指定多个字段的执行逻辑和相关度组合方法。有下面这些值可选：
+
+-   best_field
+    取最高分为整个查询的相关度。在执行时会转化为 dis_max 查询
+
+-   phrase 和 phrase_prefix
+    执行逻辑与 best_field 完全相同，至于在转化为 dis_max 时 queries 查询中的子查询会使用 phrase 或 phrase_prefix 而不是 match
+-   most_field
+    会将所有相关度累加，再除以相关度的个数。会转化为 bool 查询的 should 字句
+-   cross_field
+    会将词项拆分，在效果上不要求字段同时包含多个词项，而要求词项分散在多个字段中。
+
