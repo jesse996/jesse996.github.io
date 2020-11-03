@@ -558,3 +558,119 @@ composite 聚集可以将不类型的聚集组合到一起，它会从不同的�
 
 matrix_stats,通过 fields 参数接受统计字段的名称。
 
+# 处理特殊数据类型
+
+## 父子关系
+
+### join 类型
+
+在 elasticsearch 中并没有外键的概念，文档之间的父子关系通过给索引定义 join 类型字段实现
+
+```json
+PUT employees
+{
+    "mapping":{
+        "properties":{
+            "management":{
+                "type":"join",
+                "relations":{
+                    "manager":"member"
+                }
+            }
+        }
+    }
+}
+```
+
+manager 为父而 member 为子，名称可以由用户定义。文档在父子关系中的地位，是在添加文档时通过 join 类型字段指定的。
+
+在使用父子关系时，要求父子文档必须要映射到同一分片中，所以在添加子文档时 routing 参数是必须要设置的。
+
+可在父子关系中使用的查询有 has_child , has_parent 和 parent_id 查询，还有 parent 和 children 两种聚集
+
+### has_child 查询
+
+是根据子文档检索父文档的一种方法。它先根据查询条件将满足条件的子文档检索出来，在最终的结果中会返回具有这些子文档的父文档。
+
+### has_parent 查询
+
+与上面正好相反，是通过父文档检索子文档
+
+### parent_id 查询
+
+和 has_parent 查询类似，都是根据父文档检索子文档。但 parent_id 查询只能通过父文档`_id`做检索。
+
+### children 聚集
+
+如果想通过父文档检索与其关联的所有子文档就可以使用 children 聚集
+
+### parent 聚集
+
+与 children 聚集相反，是根据子文档查找父文档。
+
+## 嵌套类型
+
+### nested 类型
+
+为了解决对象类型在数组中丢失内部字段之间匹配关系的问题。
+这种类型会为数组中的每一个对象创建一个单独的文档，一保存对象的字段信息并使它们可检索。这类文档并不直接可见，而是藏匿在父文档之中。
+
+当字段被设置为 nested 类型后，必须用专门的检索方法，包括 nested 查询，还有聚集查询中的 nested 和 reverse_nested 两种聚集。
+
+### nested 查询
+
+nested 查询只能针对 nested 类型字段，需要通过 path 参数指定 nested 类型字段的路径，query 参数包含具体查询条件。
+
+### nested 聚集
+
+是一个单桶聚集，通过 path 字段指定 nested 字段的路径，包含在 path 指定路径中的隐式文档都将落入桶中。
+
+### reverse_nested 聚集
+
+用于在隐式文档中对父文档做聚集，所以这种聚集必须作为 nested 聚集的嵌套聚集使用。
+
+## 处理地理信息
+
+### 地理类型字段
+
+-   geo_point 类型
+    可以用经纬度或 GeoHash 编码来表示位置
+-   geo_shape 类型
+    用于存储地理形状。
+
+### geo_shape 查询
+
+根据 geo_shape 类型来过滤文档。
+
+### geo_bounding_box 查询
+
+和 geo_shape 类型，只是查询条件中指定的形状只能是矩形
+
+### geo_distance 查询
+
+将所有该再传存储点到指定点距离小于某一特定值的文档查询出来。
+
+### geo_polygon 查询
+
+和 geo_bounding_box 类型，但只是定义查询条件为多边形，不要求一定是矩形。
+
+### geohash_grid 聚集
+
+很句 GeoHash 运算区域，并根据文档 geo_point 类型的字段将文档归入不同区域形成的桶中。
+
+### geo_distence 聚集
+
+根据文档中某个坐标字段到指定地理位置的距离分组。
+
+## 使用 SQL 语言
+
+### `_sql`接口
+
+`_sql`接口通过 query 参数接受 SQL 语句，URL 请求参数 format 定义返回的格式。
+
+### 操作符与函数
+
+引入了一个等号比较`<=>`，可以在左值为 null 时不出现异常。
+LIKE 字句可以用`%`代表任意多个字符，用`_`代表单个字符。还可以用 RLIKE 使用正则表达式。
+还有 MATCH 和 QUERY 实现全文检索。
+
