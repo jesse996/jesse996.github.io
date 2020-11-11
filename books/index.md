@@ -13,7 +13,7 @@
 -   [x] windows 程序设计
 -   [x] 树莓派用户指南
 -   [x] 从实践中学习 Metaspolit 5 渗透测试
--   [ ] Elastic Stack 应用宝典
+-   [x] Elastic Stack 应用宝典
 -   [ ] C++反汇编与逆向分析技术揭秘
 -   [x] 数据密集型应用系统设计
 -   [x] 深入浅出 MySql
