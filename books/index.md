@@ -10,6 +10,7 @@
 **2020**
 
 - [ ] 加密与解密
+- [x] Spring Security 实战
 - [x] SpringBoot 2 实战之旅
 - [x] Spring Data Jpa 从入门到精通
 - [x] 挑战程序设计竞赛 2 算法和数据结构
