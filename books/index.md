@@ -10,6 +10,8 @@
 **2020**
 
 - [ ] 加密与解密
+- [x] 矩阵论（顾桂定 张振宇）
+- [x] 矩阵分析简明教程
 - [x] Spring Security 实战
 - [x] SpringBoot 2 实战之旅
 - [x] Spring Data Jpa 从入门到精通
