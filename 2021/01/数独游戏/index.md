@@ -11,10 +11,10 @@
 3. 数字 1-9 在每一个以粗实线分隔的 3x3 宫内只能出现一次。
 
 如：
-![数独](http://upload.wikimedia.org/wikipedia/commons/thumb/f/ff/Sudoku-by-L2G-20050714.svg/250px-Sudoku-by-L2G-20050714.svg.png)
+![数独](https://pic.ioiox.com/images/2021/01/27/25db85a5b81f4b2babf17f432a406328.png)
 
 一个解：
-![解](http://upload.wikimedia.org/wikipedia/commons/thumb/3/31/Sudoku-by-L2G-20050714_solution.svg/250px-Sudoku-by-L2G-20050714_solution.svg.png)
+![解](https://pic.ioiox.com/images/2021/01/27/2b82a99b064eceb88539336617c56de7.png)
 
 题目给的形式如下：
 
